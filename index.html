@@ -23,6 +23,24 @@
   --t-new:#555;        --t-new-bg:rgba(85,85,85,.08);
   --t-done:#c9a94e;    --t-done-bg:rgba(201,169,78,.12);
 }
+
+/* ── LIGHT THEME ── */
+body.light-theme{
+  --bg:#f5f3ef;--sf:#ffffff;--sf2:#f9f8f5;--sf3:#f0ede8;--bd:#d5d3ce;
+  --tx:#1a1815;--tm:#4a4845;--td:#787572;
+  --ac:#b8954a;--acd:#9a7a3a;
+  /* tag palette for light */
+  --t-booked:#2d8a54;--t-booked-bg:rgba(45,138,84,.12);
+  --t-int:#3a6fa8;--t-int-bg:rgba(58,111,168,.12);
+  --t-warm:#1a8a7a;--t-warm-bg:rgba(26,138,122,.12);
+  --t-nore:#c57535;--t-nore-bg:rgba(197,117,53,.12);
+  --t-cold:#c54545;--t-cold-bg:rgba(197,69,69,.12);
+  --t-oop:#7a54a8;--t-oop-bg:rgba(122,84,168,.12);
+  --t-inv:#4a4a4a;--t-inv-bg:rgba(74,74,74,.1);
+  --t-new:#787572;--t-new-bg:rgba(120,117,114,.08);
+  --t-done:#b8954a;--t-done-bg:rgba(184,149,74,.12);
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px}
 
@@ -427,6 +445,7 @@ textarea.fi2{resize:none;height:52px}
           <div id="colToggles"></div>
         </div>
       </div>
+      <button class="bi" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</button>
       <button class="bi" onclick="openImport()">⬆ Import</button>
       <button class="bi" onclick="openSettings()">⚙ Settings</button>
       <button class="btnadd" onclick="openPanel(null)">+ Add Lead</button>
@@ -454,7 +473,7 @@ textarea.fi2{resize:none;height:52px}
   <div class="qcm-bar" id="qcmBar">
     <span class="qcm-info">📞 Quick Call Mode</span>
     <span class="qcm-prog" id="qcmProg"></span>
-    <button class="qcm-next" onclick="qcmNext()">Next Lead →</button>
+    <button class="qcm-next" onclick="saveAndNext()">💾 Save & Next →</button>
     <button class="qcm-exit" onclick="qcmExit()">Exit</button>
   </div>
 
@@ -661,7 +680,8 @@ textarea.fi2{resize:none;height:52px}
           <div class="fus-head"><div class="fus-title" id="fu1label">📞 Initial Contact</div><div class="fus-num">FU 1</div></div>
           <div class="fus-row">
             <div class="fus-date"><span>Date</span><input type="date" id="p1d" onchange="unlockFU()"></div>
-            <div class="fus-note"><textarea id="p1n" placeholder="Notes / outcome…" oninput="unlockFU()"></textarea></div>
+            <div class="fus-date"><span>Agent</span><select class="fs2" id="p1agent" style="width:110px"></select></div>
+            <div class="fus-note"><textarea id="p1n" placeholder="Notes / outcome…" oninput="unlockFU()" onblur="this.value=autoCorrectFUNote(this.value)"></textarea></div>
           </div>
           <div class="og" id="fu1Opts"></div><input type="hidden" id="p1s">
         </div>
@@ -669,7 +689,8 @@ textarea.fi2{resize:none;height:52px}
           <div class="fus-head"><div class="fus-title" id="fu2label">🔁 Callback</div><div class="fus-num">FU 2</div></div>
           <div class="fus-row">
             <div class="fus-date"><span>Date</span><input type="date" id="p2d" onchange="unlockFU()"></div>
-            <div class="fus-note"><textarea id="p2n" placeholder="Notes / outcome…" oninput="unlockFU()"></textarea></div>
+            <div class="fus-date"><span>Agent</span><select class="fs2" id="p2agent" style="width:110px"></select></div>
+            <div class="fus-note"><textarea id="p2n" placeholder="Notes / outcome…" oninput="unlockFU()" onblur="this.value=autoCorrectFUNote(this.value)"></textarea></div>
           </div>
           <div class="og" id="fu2Opts"></div><input type="hidden" id="p2s">
         </div>
@@ -677,7 +698,8 @@ textarea.fi2{resize:none;height:52px}
           <div class="fus-head"><div class="fus-title" id="fu3label">🌡️ Warm Follow-up</div><div class="fus-num">FU 3</div></div>
           <div class="fus-row">
             <div class="fus-date"><span>Date</span><input type="date" id="p3d" onchange="unlockFU()"></div>
-            <div class="fus-note"><textarea id="p3n" placeholder="Notes / outcome…" oninput="unlockFU()"></textarea></div>
+            <div class="fus-date"><span>Agent</span><select class="fs2" id="p3agent" style="width:110px"></select></div>
+            <div class="fus-note"><textarea id="p3n" placeholder="Notes / outcome…" oninput="unlockFU()" onblur="this.value=autoCorrectFUNote(this.value)"></textarea></div>
           </div>
           <div class="og" id="fu3Opts"></div><input type="hidden" id="p3s">
         </div>
@@ -922,7 +944,8 @@ let SHEET_NAME='Leads';let CLIENT_ID='';let demoMode=false;
 let SETTINGS_SHEET_ID='';
 let PIPELINES=[];
 let ACTIVE_PIPELINE=0;
-let ACTIVE_AGENT='';   // Currently selected agent — persisted in localStorage
+let ACTIVE_AGENT='';
+let THEME='dark'; // 'dark' or 'light'   // Currently selected agent — persisted in localStorage
 let leads=[],filtered=[],chips={due:false,overdue:false,nn:false};
 let selectedRis=new Set();
 let csvD=null,csvStep=1;
@@ -934,10 +957,11 @@ let CM={
   'Date Added':'A','Source':'B','Name':'C','Phone':'D','Shoot Type':'E',
   'Location':'F','Baby Age':'G','Agent':'H','FU1 Date':'I','FU1 Notes':'J',
   'General Notes':'K','FU2 Date':'L','FU2 Notes':'M','FU3 Date':'N',
-  'FU3 Notes':'O','FU4 Date':'P','FU4 Notes':'Q','Tag':'R','Stage':'S'
+  'FU3 Notes':'O','FU4 Date':'P','FU4 Notes':'Q','Tag':'R','Stage':'S',
+  'FU1 Agent':'T','FU2 Agent':'U','FU3 Agent':'V','FU4 Agent':'W'
 };
 const FIELDS=Object.keys(CM);
-const FDESC={'Date Added':'col A','Source':'col B','Name':'col C','Phone':'col D','Shoot Type':'col E','Location':'col F','Baby Age':'col G','Agent':'col H','FU1 Date':'col I','FU1 Notes':'col J','General Notes':'col K','FU2 Date':'col L','FU2 Notes':'col M','FU3 Date':'col N','FU3 Notes':'col O','FU4 Date':'col P','FU4 Notes':'col Q','Tag':'col R','Stage':'col S'};
+const FDESC={'Date Added':'col A','Source':'col B','Name':'col C','Phone':'col D','Shoot Type':'col E','Location':'col F','Baby Age':'col G','Agent':'col H','FU1 Date':'col I','FU1 Notes':'col J','General Notes':'col K','FU2 Date':'col L','FU2 Notes':'col M','FU3 Date':'col N','FU3 Notes':'col O','FU4 Date':'col P','FU4 Notes':'col Q','Tag':'col R','Stage':'col S','FU1 Agent':'col T','FU2 Agent':'col U','FU3 Agent':'col V','FU4 Agent':'col W'};
 
 let CFG={
   shootTypes:['Newborn','Milestone','Pre Birthday Shoot','Birthday / Cake Smash','Kids','Maternity','Family'],
@@ -945,7 +969,7 @@ let CFG={
   agentEmails:{},  // {agentName: emailString} — optional per agent
   fuLabels:['Initial Contact','Callback','Warm Follow-up','Final Follow-up'],
   sources:['Whatsapp','Instagram','Facebook','Google','Referral','Incoming Call','Walk-in','JustDial'],
-  customTags:['Booked','Shoot Done','Interested','Warm','No Response','Cold','Out of Area','Invalid','New'],
+  customTags:['Booked','Shoot Done','Interested','Warm','No Response','Cold','Budget - Refer MP','Out of Area','Invalid','New'],
   fuOutcomes:[
     ['Interested','No Response','Not Interested','Budget Issue','Out of Area','Future Plan','Sent Package Details','Call Later','Booked','Invalid Number'],
     ['Still Interested','Sent Package Details','No Response','Budget Issue','Not Interested','Booked','Cancelled','Call Later'],
@@ -1003,6 +1027,7 @@ const TAG_DEFS={
   warm:      {label:'Warm',         emoji:'🩵',dot:'dt', badge:'btag-warm',      row:'row-warm',      bg:'rgba(56,210,190,.15)', color:'#38d2be', border:'rgba(56,210,190,.4)'},
   noresponse:{label:'No Response',  emoji:'🟠',dot:'do', badge:'btag-noresponse',row:'row-noresponse',bg:'rgba(232,145,74,.15)', color:'#f0a060', border:'rgba(232,145,74,.35)'},
   cold:      {label:'Cold',         emoji:'🔴',dot:'dr', badge:'btag-cold',      row:'row-cold',      bg:'rgba(224,92,92,.15)',  color:'#f07070', border:'rgba(224,92,92,.35)'},
+  budgetmp:  {label:'Budget - Refer MP',emoji:'💰',dot:'dm',badge:'btag-budgetmp',row:'row-budgetmp',bg:'rgba(155,114,207,.15)',color:'#b88ae0',border:'rgba(155,114,207,.35)'},
   outofarea: {label:'Out of Area',  emoji:'🟣',dot:'dp', badge:'btag-outofarea', row:'row-outofarea', bg:'rgba(155,114,207,.15)',color:'#b88ae0', border:'rgba(155,114,207,.35)'},
   invalid:   {label:'Invalid',      emoji:'⚫',dot:'dgy',badge:'btag-invalid',   row:'row-invalid',   bg:'rgba(100,100,100,.12)',color:'#888',    border:'rgba(100,100,100,.3)'},
   scheduled: {label:'Scheduled',    emoji:'⏰',dot:'ds', badge:'btag-scheduled', row:'row-scheduled', bg:'rgba(100,160,240,.12)',color:'#7aaae0', border:'rgba(100,160,240,.3)'},
@@ -1018,6 +1043,7 @@ function resolveTagKey(rawTag){
   // Map common keywords to canonical keys
   if(t.includes('booked'))return'booked';
   if(t.includes('shoot done')||t.includes('session done'))return'done';
+  if(t.includes('budget'))return'budgetmp'; // Budget Issue → Refer to MP
   if(t.includes('interested')&&!t.includes('not'))return'interested';
   if(t.includes('warm')||t.includes('teal'))return'warm';
   if(t.includes('no response')||t.includes('cnr')||t.includes('busy'))return'noresponse';
@@ -1267,6 +1293,25 @@ async function testConnection(){
               :'Check your Sheet ID and OAuth Client ID';
     toast('Connection failed: '+detail+'\n'+hint,'err');
     console.error('testConnection',{sheetId:SHEET_ID,tabName:SHEET_NAME,status:e.status,body:e.body});
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// THEME TOGGLE
+// ═══════════════════════════════════════════════════════════════════
+function toggleTheme(){
+  THEME=THEME==='dark'?'light':'dark';
+  applyTheme();
+  localStorage.setItem('theme',THEME);
+}
+function applyTheme(){
+  const btn=document.getElementById('themeBtn');
+  if(THEME==='light'){
+    document.body.classList.add('light-theme');
+    if(btn)btn.textContent='☀️';
+  }else{
+    document.body.classList.remove('light-theme');
+    if(btn)btn.textContent='🌙';
   }
 }
 function showApp(){
@@ -1535,6 +1580,31 @@ function getStage(l){
   if(l['FU2 Notes']||l['FU2 Date'])return CFG.fuLabels[1]+' → '+CFG.fuLabels[2];
   if(l['FU1 Notes']||l['FU1 Date'])return CFG.fuLabels[0]+' → '+CFG.fuLabels[1];
   return'New → '+CFG.fuLabels[0];
+}
+
+function isActivePipeline(l){
+  // Active Pipeline = leads with activity in last 20 days OR upcoming FU dates
+  if(isClosed(l))return false;
+  
+  const today=new Date();
+  const twentyDaysAgo=new Date(today);
+  twentyDaysAgo.setDate(today.getDate()-20);
+  
+  // Check for activity in last 20 days
+  const dateFields=['Date Added','FU1 Date','FU2 Date','FU3 Date','FU4 Date'];
+  for(const field of dateFields){
+    const d=parseDate(l[field]);
+    if(d && d>=twentyDaysAgo)return true;
+  }
+  
+  // Check for upcoming FU dates
+  const nextFU=nextFUDate(l);
+  if(nextFU){
+    const fuDate=parseDate(nextFU);
+    if(fuDate && fuDate>=today)return true;
+  }
+  
+  return false;
 }
 function isClosed(l){
   // Tags that close a lead (move to Closed tab): booked, done, cold, invalid
@@ -1850,7 +1920,7 @@ function openPanel(ri,fromQCM=false){
   document.getElementById('panelNav').style.display=(qcmActive&&!isNew)?'flex':'none';
   document.getElementById('panelTagBadge').style.display='none';
 
-  const ids=['pName','pPhone','pLoc','pAge','pNotes','pShoot','p1s','p2s','p3s','p4s','p1d','p2d','p3d','p4d','p1n','p2n','p3n','p4n'];
+  const ids=['pName','pPhone','pLoc','pAge','pNotes','pShoot','p1s','p2s','p3s','p4s','p1d','p2d','p3d','p4d','p1n','p2n','p3n','p4n','p1agent','p2agent','p3agent','p4agent'];
   ids.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('pRI').value=ri||'';
   document.getElementById('waBtn').style.display='none';
@@ -1873,10 +1943,17 @@ function openPanel(ri,fromQCM=false){
     document.getElementById('pNotes').value=l['General Notes']||'';
     setOBtn('shootOpts',l['Shoot Type']||'','sb');
     document.getElementById('pShoot').value=l['Shoot Type']||'';
-    const fuMap=[['p1d','FU1 Date','p1n','FU1 Notes','p1s',0],['p2d','FU2 Date','p2n','FU2 Notes','p2s',1],['p3d','FU3 Date','p3n','FU3 Notes','p3s',2],['p4d','FU4 Date','p4n','FU4 Notes','p4s',3]];
-    fuMap.forEach(([dd,dk,nn,nk,ss,idx])=>{
+    const fuMap=[
+      ['p1d','FU1 Date','p1n','FU1 Notes','p1agent','FU1 Agent','p1s',0],
+      ['p2d','FU2 Date','p2n','FU2 Notes','p2agent','FU2 Agent','p2s',1],
+      ['p3d','FU3 Date','p3n','FU3 Notes','p3agent','FU3 Agent','p3s',2],
+      ['p4d','FU4 Date','p4n','FU4 Notes','p4agent','FU4 Agent','p4s',3]
+    ];
+    fuMap.forEach(([dd,dk,nn,nk,aa,ak,ss,idx])=>{
       document.getElementById(dd).value=toISO(l[dk]);
       document.getElementById(nn).value=l[nk]||'';
+      const agentEl=document.getElementById(aa);
+      if(agentEl)agentEl.value=l[ak]||'';
       document.getElementById(ss).value=l[nk]||'';
       setOBtn('fu'+(idx+1)+'Opts',l[nk]||'','sg');
     });
@@ -1887,10 +1964,18 @@ function openPanel(ri,fromQCM=false){
     }
   }
   unlockFU();
-  // Pre-fill agent for new leads from active agent selector
-  if(isNew&&ACTIVE_AGENT){
+  // Pre-fill agent ONLY for new leads OR unassigned leads
+  const shouldPrefill=isNew||(ex&&!ex['Agent']);
+  if(shouldPrefill&&ACTIVE_AGENT){
     const pag=document.getElementById('pAgent');
-    if(pag)pag.value=ACTIVE_AGENT;
+    if(pag&&!pag.value)pag.value=ACTIVE_AGENT;
+  }
+  // Pre-fill FU agents with ACTIVE_AGENT if empty
+  if(ACTIVE_AGENT){
+    ['p1agent','p2agent','p3agent','p4agent'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el&&!el.value)el.value=ACTIVE_AGENT;
+    });
   }
   document.getElementById('pov').classList.add('open');
   document.getElementById('sp').classList.add('open');
@@ -1942,11 +2027,14 @@ async function saveLead(){
   const manualTag=[fv('p4s'),fv('p3s'),fv('p2s'),fv('p1s')].find(t=>t&&t.trim())||'';
   const lead={
     'Date Added':isNew?today:(ex['Date Added']||today),
-    'Name':fv('pName'),'Phone':fv('pPhone'),'Agent':document.getElementById('pAgent').value,
-    'Source':document.getElementById('pSource').value,'Location':fv('pLoc'),'Baby Age':fv('pAge'),
-    'Shoot Type':fv('pShoot'),'FU1 Date':fv('p1d'),'FU1 Notes':fv('p1n'),
-    'FU2 Date':fv('p2d'),'FU2 Notes':fv('p2n'),'FU3 Date':fv('p3d'),'FU3 Notes':fv('p3n'),
-    'FU4 Date':fv('p4d'),'FU4 Notes':fv('p4n'),'General Notes':fv('pNotes'),
+    'Name':fv('pName'),'Phone':fv('pPhone'),'Agent':normalizeText(document.getElementById('pAgent').value),
+    'Source':normalizeText(document.getElementById('pSource').value),'Location':fv('pLoc'),'Baby Age':fv('pAge'),
+    'Shoot Type':fv('pShoot'),
+    'FU1 Date':fv('p1d'),'FU1 Notes':fv('p1n'),'FU1 Agent':normalizeText(fv('p1agent')||ACTIVE_AGENT),
+    'FU2 Date':fv('p2d'),'FU2 Notes':fv('p2n'),'FU2 Agent':normalizeText(fv('p2agent')||ACTIVE_AGENT),
+    'FU3 Date':fv('p3d'),'FU3 Notes':fv('p3n'),'FU3 Agent':normalizeText(fv('p3agent')||ACTIVE_AGENT),
+    'FU4 Date':fv('p4d'),'FU4 Notes':fv('p4n'),'FU4 Agent':normalizeText(fv('p4agent')||ACTIVE_AGENT),
+    'General Notes':fv('pNotes'),
     'Tag':'','Stage':''
   };
   // Tag priority: 1) Manual outcome button selection, 2) auto-derive from notes, 3) previous stored tag
@@ -2004,6 +2092,84 @@ async function deleteLead(){
   }catch(e){toast('Delete failed: '+e.message,'err');}
 }
 
+
+// ═══════════════════════════════════════════════════════════════════
+// CASE-INSENSITIVE NORMALIZATION
+// ═══════════════════════════════════════════════════════════════════
+function normalizeText(str){
+  // Normalize to Title Case: "whatsapp" → "Whatsapp", "SAPNA" → "Sapna"
+  if(!str)return'';
+  return str.trim().toLowerCase().replace(/\w/g,c=>c.toUpperCase());
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FU NOTES AUTO-CORRECT (on blur)
+// ═══════════════════════════════════════════════════════════════════
+const FU_AUTOCORRECT={
+  // Common abbreviations → Proper outcomes
+  'cnr':'No Response',
+  'busy':'No Response',
+  'not reachable':'No Response',
+  'didnt pick':'No Response',
+  'no response':'No Response',
+  
+  'intrested':'Interested',
+  'interested':'Interested',
+  'yes':'Interested',
+  
+  'not interested':'Not Interested',
+  'not intrested':'Not Interested',
+  'ni':'Not Interested',
+  
+  'booked':'Booked',
+  'booking confirmed':'Booked',
+  'confirmed':'Booked',
+  
+  'details shared':'Sent Package Details',
+  'sent details':'Sent Package Details',
+  'package sent':'Sent Package Details',
+  'shared package':'Sent Package Details',
+  
+  'budget issue':'Budget Issue',
+  'budget':'Budget Issue',
+  'expensive':'Budget Issue',
+  
+  'call later':'Call Later',
+  'callback':'Call Later',
+  'will call back':'Call Later',
+  
+  'out of pune':'Out of Area',
+  'out of area':'Out of Area',
+  'outside':'Out of Area',
+  
+  'wrong number':'Invalid Number',
+  'invalid':'Invalid Number',
+  
+  'lost':'Lost Lead',
+  'lost lead':'Lost Lead',
+  
+  'cancelled':'Cancelled',
+  'cancel':'Cancelled',
+  
+  'shoot done':'Shoot Done',
+  'session done':'Shoot Done',
+  'photoshoot done':'Shoot Done'
+};
+
+function autoCorrectFUNote(text){
+  if(!text)return text;
+  const lower=text.toLowerCase().trim();
+  
+  // Exact match
+  if(FU_AUTOCORRECT[lower])return FU_AUTOCORRECT[lower];
+  
+  // Partial match (check if input contains a key)
+  for(const [key,val] of Object.entries(FU_AUTOCORRECT)){
+    if(lower.includes(key))return val;
+  }
+  
+  return text; // No match, return original
+}
 // ═══════════════════════════════════════════════════════════════════
 // QUICK CALL MODE
 // ═══════════════════════════════════════════════════════════════════
@@ -2018,6 +2184,11 @@ function qcmShowCurrent(){
   const l=qcmQueue[qcmIdx];
   document.getElementById('qcmProg').textContent=`${qcmIdx+1} of ${qcmQueue.length} leads`;
   openPanel(l._ri,true);
+}
+
+async function saveAndNext(){
+  await saveLead();
+  // saveLead already calls qcmNext() if qcmActive is true
 }
 function qcmNext(){
   if(qcmIdx<qcmQueue.length-1){qcmIdx++;qcmShowCurrent();}
@@ -2063,6 +2234,16 @@ async function runAutoTag(){
 // ═══════════════════════════════════════════════════════════════════
 // REPORT + POPUP
 // ═══════════════════════════════════════════════════════════════════
+
+function countFUTouches(l){
+  // Count FUs that have either a date OR notes
+  let count=0;
+  if(l['FU1 Date']||l['FU1 Notes'])count++;
+  if(l['FU2 Date']||l['FU2 Notes'])count++;
+  if(l['FU3 Date']||l['FU3 Notes'])count++;
+  if(l['FU4 Date']||l['FU4 Notes'])count++;
+  return count;
+}
 // ═══════════════════════════════════════════════════════════════════
 // REPORTING — Comprehensive Dashboard
 // ═══════════════════════════════════════════════════════════════════
@@ -2132,7 +2313,7 @@ function renderReport(){
   const fuActivity=leads.filter(l=>['FU1 Date','FU2 Date','FU3 Date','FU4 Date'].some(k=>inRange(l[k])));
   const booked=leads.filter(l=>getTag(l)==='booked');
   const lost=leads.filter(l=>getTag(l)==='cold');
-  const active=leads.filter(l=>!isClosed(l));
+  const active=leads.filter(l=>isActivePipeline(l));
   const noName=leads.filter(l=>!(l['Name']||'').trim());
   
   // Stat card helper
@@ -2234,14 +2415,82 @@ function renderReport(){
   const responded=leads.filter(l=>l['FU1 Notes']||l['FU2 Notes']||l['FU3 Notes']||l['FU4 Notes']).length;
   const responseRate=totalContacted?(responded/totalContacted*100).toFixed(1):0;
   
-  const bookedWithDates=booked.filter(l=>l['Date Added']&&(l['FU4 Date']||l['FU3 Date']||l['FU2 Date']||l['FU1 Date']));
+  // Time to Booking: Date Added → when tagged as 'booked'
+  // Use most recent FU date where notes contain 'booked'
+  const bookedWithDates=booked.filter(l=>{
+    if(!l['Date Added'])return false;
+    const fuDates=[l['FU4 Date'],l['FU3 Date'],l['FU2 Date'],l['FU1 Date']];
+    const fuNotes=[l['FU4 Notes'],l['FU3 Notes'],l['FU2 Notes'],l['FU1 Notes']];
+    for(let i=0;i<fuNotes.length;i++){
+      if((fuNotes[i]||'').toLowerCase().includes('booked')&&fuDates[i])return true;
+    }
+    return false;
+  });
+  
   const avgConvDays=bookedWithDates.length
     ?(bookedWithDates.reduce((sum,l)=>{
       const start=parseDate(l['Date Added']);
-      const end=parseDate(l['FU4 Date']||l['FU3 Date']||l['FU2 Date']||l['FU1 Date']);
-      return sum+(end-start)/86400000;
+      // Find the FU date where they were actually booked
+      let bookingDate=null;
+      const fuDates=[l['FU4 Date'],l['FU3 Date'],l['FU2 Date'],l['FU1 Date']];
+      const fuNotes=[l['FU4 Notes'],l['FU3 Notes'],l['FU2 Notes'],l['FU1 Notes']];
+      for(let i=0;i<fuNotes.length;i++){
+        if((fuNotes[i]||'').toLowerCase().includes('booked')&&fuDates[i]){
+          bookingDate=parseDate(fuDates[i]);
+          break;
+        }
+      }
+      if(!bookingDate||!start)return sum;
+      const days=(bookingDate-start)/86400000;
+      return sum+(days>=0?days:0); // Only add positive values
     },0)/bookedWithDates.length).toFixed(1)
     :0;
+  
+  // Calculate FU stages needed for booking
+  const fuToBooking={fu1:0,fu2:0,fu3:0,fu4:0};
+  let totalFUStages=0;
+  let bookedWithFU=0;
+  
+  booked.forEach(l=>{
+    const notes=[l['FU1 Notes'],l['FU2 Notes'],l['FU3 Notes'],l['FU4 Notes']];
+    for(let i=0;i<notes.length;i++){
+      if((notes[i]||'').toLowerCase().includes('booked')){
+        const stage=i+1;
+        fuToBooking['fu'+stage]++;
+        totalFUStages+=stage;
+        bookedWithFU++;
+        break; // Only count first booking mention
+      }
+    }
+  });
+  
+  const avgFUStages=bookedWithFU?(totalFUStages/bookedWithFU).toFixed(1):0;
+  
+  // Calculate avg FUs to book
+  const bookedLeads=booked.filter(l=>countFUTouches(l)>0);
+  const avgFUsToBook=bookedLeadsWithFU.length
+    ?(bookedLeads.reduce((sum,l)=>sum+countFUTouches(l),0)/bookedLeads.length).toFixed(1)
+    :'—';
+  
+
+  // FU Count to Booking Analysis
+  const bookedLeadsWithFU=booked.filter(l=>l['Date Added']); // For FU count analysis
+  const fuCountData={1:0,2:0,3:0,4:0}; // Count by # of FUs
+  let totalFUs=0;
+  
+  bookedLeadsWithFU.forEach(l=>{
+    // Count FUs that have either date OR notes
+    let fuCount=0;
+    if(l['FU1 Date']||l['FU1 Notes'])fuCount++;
+    if(l['FU2 Date']||l['FU2 Notes'])fuCount++;
+    if(l['FU3 Date']||l['FU3 Notes'])fuCount++;
+    if(l['FU4 Date']||l['FU4 Notes'])fuCount++;
+    
+    if(fuCount>0&&fuCount<=4){
+      fuCountData[fuCount]++;
+      totalFUs+=fuCount;
+    }
+  });
   
   document.getElementById('reportQuality').innerHTML=`
     <h3>📈 Lead Quality Metrics <span style="font-size:11px;color:var(--td);font-weight:400">(all time)</span></h3>
@@ -2258,13 +2507,44 @@ function renderReport(){
       </div>
       <div style="background:var(--sf2);padding:14px;border-radius:8px;border:1px solid var(--bd)">
         <div style="font-size:24px;font-weight:600;color:var(--ac)">${avgConvDays}</div>
-        <div style="font-size:11px;color:var(--tm);margin-top:2px">Avg Days to Convert</div>
-        <div style="font-size:10px;color:var(--td);margin-top:4px">From first contact to booking</div>
+        <div style="font-size:11px;color:var(--tm);margin-top:2px">Time to Booking</div>
+        <div style="font-size:10px;color:var(--td);margin-top:4px">Days from added to booked</div>
+      </div>
+      <div style="background:var(--sf2);padding:14px;border-radius:8px;border:1px solid var(--bd)">
+        <div style="font-size:24px;font-weight:600;color:var(--ac)">${avgFUStages}</div>
+        <div style="font-size:11px;color:var(--tm);margin-top:2px">Avg FU Stages to Book</div>
+        <div style="font-size:10px;color:var(--td);margin-top:4px">Average follow-ups needed</div>
       </div>
       <div style="background:var(--sf2);padding:14px;border-radius:8px;border:1px solid var(--bd)">
         <div style="font-size:24px;font-weight:600;color:var(--t-cold)">${lost.length}</div>
         <div style="font-size:11px;color:var(--tm);margin-top:2px">Lost Leads</div>
         <div style="font-size:10px;color:var(--td);margin-top:4px">Tagged as cold/not interested</div>
+      </div>
+    </div>
+    
+    <!-- FU Stages Breakdown -->
+    <div style="margin-top:16px;background:var(--sf2);padding:14px;border-radius:8px;border:1px solid var(--bd)">
+      <div style="font-size:12px;font-weight:600;color:var(--tm);margin-bottom:10px">📊 Booking Conversion by FU Stage</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+        <div>
+          <div style="font-size:18px;font-weight:600;color:var(--t-booked)">${fuToBooking.fu1}</div>
+          <div style="font-size:10px;color:var(--tm)">FU1 (${bookedWithFU?((fuToBooking.fu1/bookedWithFU)*100).toFixed(0):0}%)</div>
+        </div>
+        <div>
+          <div style="font-size:18px;font-weight:600;color:var(--t-int)">${fuToBooking.fu2}</div>
+          <div style="font-size:10px;color:var(--tm)">FU2 (${bookedWithFU?((fuToBooking.fu2/bookedWithFU)*100).toFixed(0):0}%)</div>
+        </div>
+        <div>
+          <div style="font-size:18px;font-weight:600;color:var(--t-warm)">${fuToBooking.fu3}</div>
+          <div style="font-size:10px;color:var(--tm)">FU3 (${bookedWithFU?((fuToBooking.fu3/bookedWithFU)*100).toFixed(0):0}%)</div>
+        </div>
+        <div>
+          <div style="font-size:18px;font-weight:600;color:var(--ac)">${fuToBooking.fu4}</div>
+          <div style="font-size:10px;color:var(--tm)">FU4 (${bookedWithFU?((fuToBooking.fu4/bookedWithFU)*100).toFixed(0):0}%)</div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--td);margin-top:8px;font-style:italic">
+        💡 Insight: ${avgFUStages>=3?'Most bookings need 3+ follow-ups — persistence pays off!':avgFUStages>=2?'Most bookings happen after 2 follow-ups':avgFUStages>=1?'Most leads book on first contact — great conversion!':'No booking data yet'}
       </div>
     </div>`;
   
@@ -2810,7 +3090,7 @@ function updateFUHeaders(){
   ['fu1label','fu2label','fu3label','fu4label'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=icons[i]+' '+CFG.fuLabels[i];});
 }
 function popAgents(){
-  ['fAgent','pAgent'].forEach(id=>{
+  ['fAgent','pAgent','p1agent','p2agent','p3agent','p4agent'].forEach(id=>{
     const el=document.getElementById(id);if(!el)return;
     const blank=id==='fAgent'?'<option value="">All Agents</option>':'<option value="">Select agent</option>';
     el.innerHTML=blank+CFG.agents.map(a=>`<option>${esc(a)}</option>`).join('');
@@ -3324,6 +3604,53 @@ function runTests(){
     'pushSettingsToCloud','pullSettingsFromCloud','saveSettingsSheet','renderPipelineList'];
   mustExist.forEach(fn=>assert(`${fn}() exists`,typeof eval(fn)==='function'));
 
+
+  // ── v8.2 FEATURES ──────────────────────────────────────────────
+  group('v8.2: FU Agent Fields');
+  assert('FU1 Agent in CM',CM['FU1 Agent']==='T');
+  assert('FU2 Agent in CM',CM['FU2 Agent']==='U');
+  assert('FU3 Agent in CM',CM['FU3 Agent']==='V');
+  assert('FU4 Agent in CM',CM['FU4 Agent']==='W');
+  assert('FIELDS includes FU Agents',FIELDS.includes('FU1 Agent'));
+  
+  group('v8.2: Budget-Refer MP Tag');
+  assert('budgetmp in TAG_DEFS',TAG_DEFS.budgetmp!==undefined);
+  assert('Budget keyword resolves',resolveTagKey('Budget Issue')==='budgetmp');
+  assert('budgetmp stays active',!isClosed({'Tag':'budgetmp','FU1 Notes':'Budget Issue','FU2 Notes':'','FU3 Notes':'','FU4 Notes':''}));
+  
+  group('v8.2: Active Pipeline (20 days)');
+  const recentLead={'Date Added':daysAgoISO(10),'FU1 Date':'','FU1 Notes':'','FU2 Date':'','FU2 Notes':'','FU3 Date':'','FU3 Notes':'','FU4 Date':'','FU4 Notes':'','Tag':'','Stage':'Active'};
+  const oldLead={'Date Added':daysAgoISO(30),'FU1 Date':daysAgoISO(25),'FU1 Notes':'','FU2 Date':'','FU2 Notes':'','FU3 Date':'','FU3 Notes':'','FU4 Date':'','FU4 Notes':'','Tag':'','Stage':'Active'};
+  const futureFULead={'Date Added':daysAgoISO(30),'FU1 Date':daysAgoISO(25),'FU1 Notes':'Test','FU2 Date':futureDate(5),'FU2 Notes':'','FU3 Date':'','FU3 Notes':'','FU4 Date':'','FU4 Notes':'','Tag':'','Stage':'Active'};
+  assert('Recent lead is active',isActivePipeline(recentLead));
+  assert('Old lead not active',!isActivePipeline(oldLead));
+  assert('Old with upcoming FU is active',isActivePipeline(futureFULead));
+  
+  group('v8.2: Call Queue Auto-Save');
+  assert('saveAndNext exists',typeof saveAndNext==='function');
+
+
+  group('v8.2-beta: Theme Toggle');
+  assert('toggleTheme exists',typeof toggleTheme==='function');
+  assert('applyTheme exists',typeof applyTheme==='function');
+  assert('THEME variable exists',typeof THEME==='string');
+  
+  group('v8.2-beta: Case-Insensitive Normalization');
+  assert('normalizeText exists',typeof normalizeText==='function');
+  assert('normalizeText: lowercase'  ,normalizeText('whatsapp')==='Whatsapp');
+  assert('normalizeText: UPPERCASE',normalizeText('SAPNA')==='Sapna');
+  assert('normalizeText: MixedCase',normalizeText('RaJsHrEe')==='Rajshree');
+  assert('normalizeText: with spaces',normalizeText(' instagram ')==='Instagram');
+  
+  group('v8.2-beta: FU Auto-Correct');
+  assert('autoCorrectFUNote exists',typeof autoCorrectFUNote==='function');
+  assert('cnr → No Response',autoCorrectFUNote('cnr')==='No Response');
+  assert('busy → No Response',autoCorrectFUNote('busy')==='No Response');
+  assert('intrested → Interested',autoCorrectFUNote('intrested')==='Interested');
+  assert('booked → Booked',autoCorrectFUNote('booked')==='Booked');
+  assert('budget → Budget Issue',autoCorrectFUNote('budget')==='Budget Issue');
+  assert('No match returns original',autoCorrectFUNote('random text')==='random text');
+
   // ── RENDER ─────────────────────────────────────────────────────
   const total=pass+fail;
   document.getElementById('testSummary').textContent=`${pass}/${total} passed${fail>0?' — '+fail+' FAILED':'  ✓ All pass'}`;
@@ -3345,7 +3672,7 @@ window.addEventListener('load',()=>{
   if(c)document.getElementById('cfgCid').value=c;
   if(s)document.getElementById('cfgSid').value=s;
   if(n)document.getElementById('cfgSname').value=n;
-  document.getElementById('reportDate').value=todayISO();
+  // v8: reportDate removed, now using reportFrom/reportTo
 });
 </script>
 </body>
