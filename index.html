@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>StudioCRM v8.2 — LilliputLand</title>
+<title>StudioCRM v8.3 — LilliputLand</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 <style>
 /* ── TOKENS ── */
@@ -374,7 +374,7 @@ textarea.fi2{resize:none;height:52px}
 <!-- AUTH -->
 <div id="authScreen" class="auth">
   <div class="alogo">StudioCRM</div>
-  <p style="color:var(--tm);font-size:13px;max-width:360px;line-height:1.6;margin-bottom:16px">LilliputLand Photography · Lead Tracker v7</p>
+  <p style="color:var(--tm);font-size:13px;max-width:360px;line-height:1.6;margin-bottom:16px">LilliputLand Photography · Lead Tracker v8.3</p>
 
   <div class="sbox" style="max-width:420px;width:100%">
     <h3 style="margin-bottom:14px">🔗 Connect Your Google Sheet</h3>
@@ -394,14 +394,14 @@ textarea.fi2{resize:none;height:52px}
     <input class="cin" id="cfgCid" placeholder="xxxx.apps.googleusercontent.com">
 
     <label style="font-size:11px;color:var(--tm);margin-top:9px;display:block">Sheet ID <span style="color:var(--td)">(from URL)</span></label>
-    <input class="cin" id="cfgSid" placeholder="1pU5bp7J4nEYlg…" oninput="updateTabHint()">
+    <input class="cin" id="cfgSid" placeholder="1pU5bp7J4nEYlg…" >
 
     <label style="font-size:11px;color:var(--tm);margin-top:9px;display:block">Tab Name <span style="color:var(--td)">(exact, case-sensitive)</span></label>
-    <input class="cin" id="cfgSname" placeholder="e.g. January Leads" oninput="updateTabHint()">
+    <input class="cin" id="cfgSname" placeholder="e.g. January Leads" >
     <div id="tabHint" style="font-size:11px;color:var(--td);margin-top:4px;min-height:16px"></div>
 
     <div style="display:flex;flex-direction:column;gap:7px;margin-top:14px">
-      <button class="bgg" onclick="initAuth()">
+      <button class="bgg" onclick="connectSheet()">
         <svg width="17" height="17" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.31z"/></svg>
         Sign in with Google &amp; Load Sheet
       </button>
@@ -1238,16 +1238,14 @@ function setDatePreset(p){
 // ═══════════════════════════════════════════════════════════════════
 // GOOGLE AUTH + SHEET OPS
 // ═══════════════════════════════════════════════════════════════════
-function updateTabHint(){
-  const sid=(document.getElementById('cfgSid')||{}).value?.trim()||'';
+).value?.trim()||'';
   const sn=(document.getElementById('cfgSname')||{}).value?.trim()||'';
   const hint=document.getElementById('tabHint');if(!hint)return;
   if(sid&&sid.length>20&&!sn)hint.textContent='⚠ Tab Name is required — check the tab at the bottom of your sheet';
   else if(sn)hint.textContent='✓ Will load tab: "'+sn+'"';
   else hint.textContent='';
 }
-function initAuth(){
-  CLIENT_ID=(document.getElementById('cfgCid')||{}).value?.trim()||'';
+).value?.trim()||'';
   const sid=(document.getElementById('cfgSid')||{}).value?.trim()||'';
   const sn=(document.getElementById('cfgSname')||{}).value?.trim()||'Leads';
   if(!CLIENT_ID){toast('Enter your OAuth Client ID','err');return;}
@@ -1313,6 +1311,36 @@ function applyTheme(){
     document.body.classList.remove('light-theme');
     if(btn)btn.textContent='🌙';
   }
+}
+
+function connectSheet(){
+  const cidEl=document.getElementById('cfgCid');
+  const sidEl=document.getElementById('cfgSid');
+  const snEl=document.getElementById('cfgSname');
+  if(!cidEl||!cidEl.value||!cidEl.value.trim()){toast('Enter your OAuth Client ID','err');return;}
+  if(!sidEl||!sidEl.value||!sidEl.value.trim()){toast('Enter your Sheet ID','err');return;}
+  CLIENT_ID=cidEl.value.trim();
+  SHEET_ID=sidEl.value.trim();
+  SHEET_NAME=(snEl&&snEl.value)?snEl.value.trim():'Leads';
+  localStorage.setItem('sc',CLIENT_ID);localStorage.setItem('ss2',SHEET_ID);localStorage.setItem('sn2',SHEET_NAME);
+  loadGoogleAPIs();
+}
+function loadGoogleAPIs(){
+  const s1=document.createElement('script');s1.src='https://accounts.google.com/gsi/client';
+  s1.onload=function(){
+    const s2=document.createElement('script');s2.src='https://apis.google.com/js/api.js';
+    s2.onload=function(){
+      gapi.load('client',async function(){
+        await gapi.client.init({apiKey:'',discoveryDocs:['https://sheets.googleapis.com/$discovery/rest?version=v4']});
+        google.accounts.oauth2.initTokenClient({
+          client_id:CLIENT_ID,scope:'https://www.googleapis.com/auth/spreadsheets',
+          callback:async function(r){if(r.access_token){await testConnection();showApp();}else{toast('Auth failed','err');}}
+        }).requestAccessToken();
+      });
+    };
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s1);
 }
 function showApp(){
   document.getElementById('authScreen').style.display='none';
@@ -3069,9 +3097,7 @@ function renderArchive(){
 function initUI(){rebuildShootFilter();renderShootOpts();renderFUOpts();popAgents();initColToggles();updateFUHeaders();populateBulkAgents();rebuildSourceFilter();populatePanelSource();rebuildTagFilter();populateYaBar();}
 function rebuildShootFilter(){const sel=document.getElementById('fShoot');const cur=sel.value;sel.innerHTML='<option value="">All Shoots</option>'+CFG.shootTypes.map(t=>`<option${cur===t?' selected':''}>${esc(t)}</option>`).join('');}
 function renderShootOpts(){document.getElementById('shootOpts').innerHTML=CFG.shootTypes.map(t=>`<button class="ob" data-val="${esc(t)}" onclick="selectOB('shootOpts','${esc(t)}','sb','pShoot')">${esc(t)}</button>`).join('');}
-function updateFUHeaders(){
-  const icons=['📞','🔁','🌡️','🏁'];
-  ['fu1label','fu2label','fu3label','fu4label'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=icons[i]+' '+CFG.fuLabels[i];});
+);
 }
 function renderFUOpts(){
   // Outcome buttons now set the TAG field (not fill notes) — notes are for free-text comments
@@ -3247,12 +3273,7 @@ function runTests(){
   group('Age → Shoot Type (JavaScript)');
   function ageTag(age){const l={'Baby Age':age,'General Notes':'','FU1 Notes':''};return classifyShootType(age);}
   // We embed the JS classifier here
-  function classifyShootType(rawAge,notes=''){
-    if(!rawAge)return'';
-    const s=rawAge.trim().toLowerCase();const n=(notes||'').toLowerCase();
-    if(/mat|mater|matern|pregnancy/.test(s)||s==='mat'||n.includes('maternity'))return'Maternity';
-    if(s==='nb'||s.includes('newborn')||s.includes('new born'))return'Newborn';
-    const dm=s.match(/(\d+)\s*days?/);if(dm){const d=parseInt(dm[1]);return d<=45?'Newborn':'Milestone';}
+  
     const ym=s.match(/(\d+(?:\.\d+)?)\s*(?:y(?:r?s?|ear?s?))/);
     const mm=s.match(/(\d+(?:\.\d+)?)\s*(?:m(?:o(?:n(?:th?s?)?)?)?h?)(?![a-z])/);
     let months=null;
@@ -3605,20 +3626,20 @@ function runTests(){
   mustExist.forEach(fn=>assert(`${fn}() exists`,typeof eval(fn)==='function'));
 
 
-  // ── v8.2 FEATURES ──────────────────────────────────────────────
-  group('v8.2: FU Agent Fields');
+  // ── v8.3 FEATURES ──────────────────────────────────────────────
+  group('v8.3: FU Agent Fields');
   assert('FU1 Agent in CM',CM['FU1 Agent']==='T');
   assert('FU2 Agent in CM',CM['FU2 Agent']==='U');
   assert('FU3 Agent in CM',CM['FU3 Agent']==='V');
   assert('FU4 Agent in CM',CM['FU4 Agent']==='W');
   assert('FIELDS includes FU Agents',FIELDS.includes('FU1 Agent'));
   
-  group('v8.2: Budget-Refer MP Tag');
+  group('v8.3: Budget-Refer MP Tag');
   assert('budgetmp in TAG_DEFS',TAG_DEFS.budgetmp!==undefined);
   assert('Budget keyword resolves',resolveTagKey('Budget Issue')==='budgetmp');
   assert('budgetmp stays active',!isClosed({'Tag':'budgetmp','FU1 Notes':'Budget Issue','FU2 Notes':'','FU3 Notes':'','FU4 Notes':''}));
   
-  group('v8.2: Active Pipeline (20 days)');
+  group('v8.3: Active Pipeline (20 days)');
   const recentLead={'Date Added':daysAgoISO(10),'FU1 Date':'','FU1 Notes':'','FU2 Date':'','FU2 Notes':'','FU3 Date':'','FU3 Notes':'','FU4 Date':'','FU4 Notes':'','Tag':'','Stage':'Active'};
   const oldLead={'Date Added':daysAgoISO(30),'FU1 Date':daysAgoISO(25),'FU1 Notes':'','FU2 Date':'','FU2 Notes':'','FU3 Date':'','FU3 Notes':'','FU4 Date':'','FU4 Notes':'','Tag':'','Stage':'Active'};
   const futureFULead={'Date Added':daysAgoISO(30),'FU1 Date':daysAgoISO(25),'FU1 Notes':'Test','FU2 Date':futureDate(5),'FU2 Notes':'','FU3 Date':'','FU3 Notes':'','FU4 Date':'','FU4 Notes':'','Tag':'','Stage':'Active'};
@@ -3626,23 +3647,23 @@ function runTests(){
   assert('Old lead not active',!isActivePipeline(oldLead));
   assert('Old with upcoming FU is active',isActivePipeline(futureFULead));
   
-  group('v8.2: Call Queue Auto-Save');
+  group('v8.3: Call Queue Auto-Save');
   assert('saveAndNext exists',typeof saveAndNext==='function');
 
 
-  group('v8.2-beta: Theme Toggle');
+  group('v8.3-beta: Theme Toggle');
   assert('toggleTheme exists',typeof toggleTheme==='function');
   assert('applyTheme exists',typeof applyTheme==='function');
   assert('THEME variable exists',typeof THEME==='string');
   
-  group('v8.2-beta: Case-Insensitive Normalization');
+  group('v8.3-beta: Case-Insensitive Normalization');
   assert('normalizeText exists',typeof normalizeText==='function');
   assert('normalizeText: lowercase'  ,normalizeText('whatsapp')==='Whatsapp');
   assert('normalizeText: UPPERCASE',normalizeText('SAPNA')==='Sapna');
   assert('normalizeText: MixedCase',normalizeText('RaJsHrEe')==='Rajshree');
   assert('normalizeText: with spaces',normalizeText(' instagram ')==='Instagram');
   
-  group('v8.2-beta: FU Auto-Correct');
+  group('v8.3-beta: FU Auto-Correct');
   assert('autoCorrectFUNote exists',typeof autoCorrectFUNote==='function');
   assert('cnr → No Response',autoCorrectFUNote('cnr')==='No Response');
   assert('busy → No Response',autoCorrectFUNote('busy')==='No Response');
