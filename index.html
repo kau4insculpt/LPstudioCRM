@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>StudioCRM v7 — LilliputLand</title>
+<title>StudioCRM v8.2 — LilliputLand</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 <style>
 /* ── TOKENS ── */
@@ -852,7 +852,7 @@ textarea.fi2{resize:none;height:52px}
           <p><strong style="color:var(--tx)">Option 1 — Share Sheet directly (easiest, up to ~10 users):</strong><br>
           Open your Google Sheet → Share → add each agent's Gmail address as an Editor. They sign into this CRM with their own Google account. Each agent sees their own name in the auth prompt.</p>
           <p><strong style="color:var(--tx)">Option 2 — One shared studio account:</strong><br>
-          Create a single Gmail like <code style="background:var(--sf2);padding:1px 5px;border-radius:3px">lilliputland.studio@gmail.com</code>. All agents use those credentials. Simple but no per-agent audit trail.</p>
+          Create a single Gmail like <code style="background:var(--sf2);padding:1px 5px;border-radius:3px"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b6dadfdadadfc6c3c2dad7d8d298c5c2c3d2dfd9f6d1dbd7dfda98d5d9db">[email&#160;protected]</a></code>. All agents use those credentials. Simple but no per-agent audit trail.</p>
           <p><strong style="color:var(--tx)">Option 3 — Google Apps Script Web App (recommended for 5+ agents):</strong><br>
           This removes the need for agents to have Sheet access entirely. The app runs as the owner. Agents open a URL — no OAuth needed. Contact your developer to set this up, or ask for the companion <code>.gs</code> script.</p>
           <p style="color:var(--td);font-size:11px">⚡ For LilliputLand: Option 1 is recommended right now. Go to your sheet → Share → add each agent's Gmail → set to Editor.</p>
@@ -935,7 +935,7 @@ textarea.fi2{resize:none;height:52px}
 
 <div class="toast" id="toast"></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ═══════════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════════
@@ -3669,11 +3669,4 @@ function runTests(){
 // ═══════════════════════════════════════════════════════════════════
 window.addEventListener('load',()=>{
   const c=localStorage.getItem('sc'),s=localStorage.getItem('ss2'),n=localStorage.getItem('sn2');
-  if(c)document.getElementById('cfgCid').value=c;
-  if(s)document.getElementById('cfgSid').value=s;
-  if(n)document.getElementById('cfgSname').value=n;
-  // v8: reportDate removed, now using reportFrom/reportTo
-});
-</script>
-</body>
-</html>
+ 
