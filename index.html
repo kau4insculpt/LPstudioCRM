@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>StudioCRM v7 — LilliputLand</title>
+<title>StudioCRM v9.5 — LilliputLand</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 <style>
 /* ── TOKENS ── */
@@ -661,33 +661,28 @@ textarea.fi2{resize:none;height:52px}
           <div class="fus-head"><div class="fus-title" id="fu1label">📞 Initial Contact</div><div class="fus-num">FU 1</div></div>
           <div class="fus-row">
             <div class="fus-date"><span>Date</span><input type="date" id="p1d" onchange="unlockFU()"></div>
-            <div class="fus-note"><textarea id="p1n" placeholder="Notes / outcome…" oninput="unlockFU()"></textarea></div>
+            <div class="fus-note"><textarea id="p1n" placeholder="Free-text notes…" oninput="unlockFU()"></textarea></div>
           </div>
           <div class="og" id="fu1Opts"></div><input type="hidden" id="p1s">
+          <input type="hidden" id="p1o">
         </div>
         <div class="fus locked" id="fu2b">
           <div class="fus-head"><div class="fus-title" id="fu2label">🔁 Callback</div><div class="fus-num">FU 2</div></div>
           <div class="fus-row">
             <div class="fus-date"><span>Date</span><input type="date" id="p2d" onchange="unlockFU()"></div>
-            <div class="fus-note"><textarea id="p2n" placeholder="Notes / outcome…" oninput="unlockFU()"></textarea></div>
+            <div class="fus-note"><textarea id="p2n" placeholder="Free-text notes…" oninput="unlockFU()"></textarea></div>
           </div>
           <div class="og" id="fu2Opts"></div><input type="hidden" id="p2s">
+          <input type="hidden" id="p2o">
         </div>
         <div class="fus locked" id="fu3b">
-          <div class="fus-head"><div class="fus-title" id="fu3label">🌡️ Warm Follow-up</div><div class="fus-num">FU 3</div></div>
+          <div class="fus-head"><div class="fus-title" id="fu3label">🏁 Final Follow-up</div><div class="fus-num">FU 3</div></div>
           <div class="fus-row">
             <div class="fus-date"><span>Date</span><input type="date" id="p3d" onchange="unlockFU()"></div>
-            <div class="fus-note"><textarea id="p3n" placeholder="Notes / outcome…" oninput="unlockFU()"></textarea></div>
+            <div class="fus-note"><textarea id="p3n" placeholder="Free-text notes…" oninput="unlockFU()"></textarea></div>
           </div>
           <div class="og" id="fu3Opts"></div><input type="hidden" id="p3s">
-        </div>
-        <div class="fus locked" id="fu4b">
-          <div class="fus-head"><div class="fus-title" id="fu4label">🏁 Final Follow-up</div><div class="fus-num">FU 4</div></div>
-          <div class="fus-row">
-            <div class="fus-date"><span>Date</span><input type="date" id="p4d"></div>
-            <div class="fus-note"><textarea id="p4n" placeholder="Notes / outcome…"></textarea></div>
-          </div>
-          <div class="og" id="fu4Opts"></div><input type="hidden" id="p4s">
+          <input type="hidden" id="p3o">
         </div>
       </div>
     </div>
@@ -830,7 +825,7 @@ textarea.fi2{resize:none;height:52px}
           <p><strong style="color:var(--tx)">Option 1 — Share Sheet directly (easiest, up to ~10 users):</strong><br>
           Open your Google Sheet → Share → add each agent's Gmail address as an Editor. They sign into this CRM with their own Google account. Each agent sees their own name in the auth prompt.</p>
           <p><strong style="color:var(--tx)">Option 2 — One shared studio account:</strong><br>
-          Create a single Gmail like <code style="background:var(--sf2);padding:1px 5px;border-radius:3px">lilliputland.studio@gmail.com</code>. All agents use those credentials. Simple but no per-agent audit trail.</p>
+          Create a single Gmail like <code style="background:var(--sf2);padding:1px 5px;border-radius:3px"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ae6e3e6e6e3fafffee6ebe4eea4f9feffeee3e5caede7ebe3e6a4e9e5e7">[email&#160;protected]</a></code>. All agents use those credentials. Simple but no per-agent audit trail.</p>
           <p><strong style="color:var(--tx)">Option 3 — Google Apps Script Web App (recommended for 5+ agents):</strong><br>
           This removes the need for agents to have Sheet access entirely. The app runs as the owner. Agents open a URL — no OAuth needed. Contact your developer to set this up, or ask for the companion <code>.gs</code> script.</p>
           <p style="color:var(--td);font-size:11px">⚡ For LilliputLand: Option 1 is recommended right now. Go to your sheet → Share → add each agent's Gmail → set to Editor.</p>
@@ -917,8 +912,8 @@ textarea.fi2{resize:none;height:52px}
 // ═══════════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════════
-let SHEET_ID='1pU5bp7J4nEYlgUkl-0RevfPFwHIJLlA09KYQ-hZhvz8';
-let SHEET_NAME='Leads';let CLIENT_ID='';let demoMode=false;
+let SHEET_ID='1Y_q-pIIn2H-_nqz0awkONUqo_KvFtcWn2KTNMlt2FEI';
+let SHEET_NAME='Leads';let CLIENT_ID='143244370984-tdc8hbs1r5vjge26fbi5umbamgk2a7l1.apps.googleusercontent.com';let demoMode=false;
 let SETTINGS_SHEET_ID='';
 let PIPELINES=[];
 let ACTIVE_PIPELINE=0;
@@ -932,34 +927,42 @@ let activeDatePreset='';
 
 let CM={
   'Date Added':'A','Source':'B','Name':'C','Phone':'D','Shoot Type':'E',
-  'Location':'F','Baby Age':'G','Agent':'H','FU1 Date':'I','FU1 Notes':'J',
-  'General Notes':'K','FU2 Date':'L','FU2 Notes':'M','FU3 Date':'N',
-  'FU3 Notes':'O','FU4 Date':'P','FU4 Notes':'Q','Tag':'R','Stage':'S'
+  'Location':'F','Baby Age':'G','Agent':'H',
+  'FU1 Date':'I','FU1 Outcome':'J','FU1 Notes':'K',
+  'FU2 Date':'L','FU2 Outcome':'M','FU2 Notes':'N',
+  'FU3 Date':'O','FU3 Outcome':'P','FU3 Notes':'Q',
+  'Tag':'R','General Notes':'S'
 };
 const FIELDS=Object.keys(CM);
-const FDESC={'Date Added':'col A','Source':'col B','Name':'col C','Phone':'col D','Shoot Type':'col E','Location':'col F','Baby Age':'col G','Agent':'col H','FU1 Date':'col I','FU1 Notes':'col J','General Notes':'col K','FU2 Date':'col L','FU2 Notes':'col M','FU3 Date':'col N','FU3 Notes':'col O','FU4 Date':'col P','FU4 Notes':'col Q','Tag':'col R','Stage':'col S'};
+const FDESC={
+  'Date Added':'col A','Source':'col B','Name':'col C','Phone':'col D','Shoot Type':'col E',
+  'Location':'col F','Baby Age':'col G','Agent':'col H',
+  'FU1 Date':'col I','FU1 Outcome':'col J','FU1 Notes':'col K',
+  'FU2 Date':'col L','FU2 Outcome':'col M','FU2 Notes':'col N',
+  'FU3 Date':'col O','FU3 Outcome':'col P','FU3 Notes':'col Q',
+  'Tag':'col R','General Notes':'col S'
+};
 
 let CFG={
-  shootTypes:['Newborn','Milestone','Pre Birthday Shoot','Birthday / Cake Smash','Kids','Maternity','Family'],
-  agents:['Rajshree','Rashmi','Ravi','Priya','Manager'],
+  shootTypes:['Newborn','Maternity','Pre-Birthday','Milestone','Cake Smash','Other'],
+  agents:['Shital','Sapna','Rashmi','Dhaneshri'],
   agentEmails:{},  // {agentName: emailString} — optional per agent
-  fuLabels:['Initial Contact','Callback','Warm Follow-up','Final Follow-up'],
-  sources:['Whatsapp','Instagram','Facebook','Google','Referral','Incoming Call','Walk-in','JustDial'],
+  fuLabels:['Initial Contact','Callback','Final Follow-up'],
+  sources:['WhatsApp','Incoming Call','Instagram','Website','AI Sensi','Unknown'],
   customTags:['Booked','Shoot Done','Interested','Warm','No Response','Cold','Out of Area','Invalid','New'],
   fuOutcomes:[
-    ['Interested','No Response','Not Interested','Budget Issue','Out of Area','Future Plan','Sent Package Details','Call Later','Booked','Invalid Number'],
-    ['Still Interested','Sent Package Details','No Response','Budget Issue','Not Interested','Booked','Cancelled','Call Later'],
-    ['No Response','Confirmed Date','Lost Lead','Booked','Rescheduled'],
-    ['Booked','Lost Lead','No Response','Shoot Done','Cancelled']
+    ['Interested','CNR / No Response','Not Interested','Budget Issue','Out of Pune / Area','Future Shoot (Planned)','Details Shared','Call Back Later','Booked','Just Enquiry','Studio Visit Planned'],
+    ['Still Interested','Details Shared','CNR / No Response','Budget Issue','Not Interested','Booked','Call Back Later','Future Shoot (Planned)'],
+    ['Booked','Not Interested','CNR / No Response','Shoot Done','Future Shoot (Planned)','Lost Lead']
   ],
   archiveDays:60
 };
 
-const SW={'Newborn':14,'Milestone':45,'Pre Birthday Shoot':30,'Birthday / Cake Smash':7,'Kids':365,'Maternity':84,'Family':365};
+const SW={'Newborn':14,'Milestone':45,'Pre-Birthday':30,'Cake Smash':7,'Maternity':84,'Other':365};
 
 // ── SHOOT TYPE CLASSIFIER ─────────────────────────────────────────
-// Rules: 0-1m=Newborn, 2-6m=Milestone, 7-10m=Pre Birthday, 11-13m=Birthday/CakeSmash
-// 14m+=Kids (unless notes say "family"→Family), maternity keyword→Maternity
+// Rules: 0-1m=Newborn, 2-6m=Milestone, 7-10m=Pre-Birthday, 11-13m=Cake Smash
+// 14m+=Other (default), maternity keyword→Maternity
 function classifyShootType(rawAge, notes=''){
   if(!rawAge)return'';
   const s=rawAge.trim().toLowerCase();
@@ -987,11 +990,9 @@ function classifyShootType(rawAge, notes=''){
   if(months===null)return'';
   if(months<=1)  return'Newborn';
   if(months<=6)  return'Milestone';
-  if(months<11)  return'Pre Birthday Shoot';
-  if(months<14)  return'Birthday / Cake Smash';
-  // 14m+ — Kids unless notes explicitly say "family shoot"
-  if(n.includes('family shoot')||n.includes('family package'))return'Family';
-  return'Kids';
+  if(months<11)  return'Pre-Birthday';
+  if(months<14)  return'Cake Smash';
+  return'Other';
 }
 
 // ── TAG SYSTEM ──────────────────────────────────────────────────
@@ -1028,27 +1029,33 @@ function resolveTagKey(rawTag){
   return null;
 }
 
-// Keyword-based auto-derive (checks last note, most specific first)
+// Keyword-based auto-derive (checks last note/outcome, most specific first)
 function deriveTag(l){
-  // Notes from most recent to oldest — last FU wins
-  const notes=[l['FU4 Notes'],l['FU3 Notes'],l['FU2 Notes'],l['FU1 Notes'],l['General Notes']].filter(Boolean);
-  const combined=notes.join(' ').toLowerCase();
-  const n=(notes[0]||'').toLowerCase();
+  // Scan outcomes + notes from most recent to oldest — later FU wins
+  // FU3 Outcome/Notes → FU2 Outcome/Notes → FU1 Outcome/Notes → General Notes
+  const sources=[
+    l['FU3 Notes'],l['FU3 Outcome'],
+    l['FU2 Notes'],l['FU2 Outcome'],
+    l['FU1 Notes'],l['FU1 Outcome'],
+    l['General Notes'],
+  ].filter(Boolean);
+  const combined=sources.join(' ').toLowerCase();
+  // Most recent non-empty source is the primary signal
+  const n=(sources[0]||'').toLowerCase();
   if(!n&&!combined)return'new';
 
-  // BOOKED / DONE — scan all notes, any match wins
+  // BOOKED / DONE — scan all, any match wins
   if(combined.includes('shoot done')||combined.includes('session done'))return'done';
   if(combined.includes('booking confirmed')||combined.includes('booked'))return'booked';
 
-  // COLD — not interested, budget issue, cancelled
+  // COLD — not interested, lost, cancelled, budget issue (budget = lost for now)
   if(n.includes('not interested')||n.includes('not intrested')||
      n.includes('lost lead')||n.includes('cancelled')||n.includes('cancel shoot')||
      n.includes('budget issue')||n.includes('budget problem'))return'cold';
 
-  // OUT OF AREA — geographic: not from Pune, other cities, referred to partner studio
-  // NOTE: "Out of Service" is NOT out of area — it's an invalid number (handled below)
+  // OUT OF AREA — geographic
   if(n.includes('not from pune')||n.includes('outsider')||n.includes('out of pune')||
-     n.includes('location is far')||n.includes('too far')||
+     n.includes('out of pune / area')||n.includes('location is far')||n.includes('too far')||
      n.includes('nagpur')||n.includes('nashik')||n.includes('mumbai')||
      n.includes('hyderabad')||n.includes('patna')||n.includes('jalgaon')||
      n.includes('jalgoan')||n.includes('kolkata')||n.includes('delhi')||
@@ -1063,23 +1070,28 @@ function deriveTag(l){
      n.includes('number does not exist')||n.includes('disconnected number'))return'invalid';
 
   // INTERESTED — explicit interest or details sent
-  if(n.includes('interested')&&!n.includes('not interested')&&!n.includes('not intrested')||
+  if((n.includes('interested')&&!n.includes('not interested')&&!n.includes('not intrested'))||
      n.includes('details shared')||n.includes('details share')||n.includes('shared details')||
      n.includes('send details')||n.includes('sent details')||n.includes('sent package')||
      n.includes('package details')||n.includes('shared package')||
      n.includes('follow up required')||n.includes('followup required'))return'interested';
 
-  // WARM — planning, future follow-up, callback requested
+  // WARM — planning, future shoot, callback, visit
   if(n.includes('call later')||n.includes('call back')||n.includes('callback')||
+     n.includes('call back later')||
      n.includes('asked to call')||n.includes('asked me to call')||
-     n.includes('future enquiry')||n.includes('future plan')||
+     n.includes('future enquiry')||n.includes('future plan')||n.includes('future shoot')||
      n.includes('plan for')||n.includes('planning for')||n.includes('planning in')||
      n.includes('next week')||n.includes('next month')||n.includes('will call')||
-     n.includes('will visit')||n.includes('feb end')||n.includes('coming week')||
-     n.includes('coming month'))return'warm';
+     n.includes('will visit')||n.includes('studio visit')||
+     n.includes('feb end')||n.includes('coming week')||n.includes('coming month'))return'warm';
 
-  // NO RESPONSE — CNA / CNR / busy / voicemail (very high volume in this sheet)
+  // JUST ENQUIRY — keep active but low priority
+  if(n.includes('just enquiry')||n.includes('just enq')||n.includes('only enquiry'))return'noresponse';
+
+  // NO RESPONSE — CNA / CNR / busy / voicemail
   if(n.includes('no response')||n.includes('cnr')||n.includes('cna')||
+     n.includes('cnr / no response')||
      n.includes('call busy')||n.includes('number busy')||
      n.includes('call not answered')||n.includes('call not received')||n.includes('call not done')||
      n.includes('no answer')||n.includes('voice mail')||n.includes('voicemail')||
@@ -1107,7 +1119,7 @@ function tagHTML(l){const t=getTag(l);const d=TAG_DEFS[t]||TAG_DEFS.new;
 // Hidden from Due Today and Overdue before the reminder date — surfaces only on exact date
 function isScheduledReminder(l){
   // Check each FU: date set but NO notes on that stage
-  const stages=[['FU1 Date','FU1 Notes'],['FU2 Date','FU2 Notes'],['FU3 Date','FU3 Notes'],['FU4 Date','FU4 Notes']];
+  const stages=[['FU1 Date','FU1 Notes'],['FU2 Date','FU2 Notes'],['FU3 Date','FU3 Notes']];
   return stages.some(([dk,nk])=>{
     const d=(l[dk]||'').trim();const n=(l[nk]||'').trim();
     if(!d||n)return false; // needs date + empty notes
@@ -1118,7 +1130,7 @@ function isScheduledReminder(l){
 }
 // Get the next reminder date for a scheduled lead
 function reminderDate(l){
-  const stages=[['FU1 Date','FU1 Notes'],['FU2 Date','FU2 Notes'],['FU3 Date','FU3 Notes'],['FU4 Date','FU4 Notes']];
+  const stages=[['FU1 Date','FU1 Notes'],['FU2 Date','FU2 Notes'],['FU3 Date','FU3 Notes']];
   for(const [dk,nk] of stages){
     const d=(l[dk]||'').trim();const n=(l[nk]||'').trim();
     if(d&&!n){const parsed=parseDate(d);if(parsed){const t=new Date();t.setHours(0,0,0,0);parsed.setHours(0,0,0,0);if(parsed>=t)return d;}}
@@ -1164,15 +1176,40 @@ function cl(f){return(CM[f]||'').toUpperCase();}
 function ci(f){const l=cl(f);if(!l)return -1;let n=0;for(let i=0;i<l.length;i++)n=n*26+(l.charCodeAt(i)-64);return n-1;}
 function maxCI(){return Math.max(...FIELDS.map(f=>ci(f)).filter(i=>i>=0));}
 function n2l(n){let s='';n++;while(n>0){n--;s=String.fromCharCode(65+(n%26))+s;n=Math.floor(n/26);}return s;}
-function rowToLead(row){const l={};FIELDS.forEach(f=>{const i=ci(f);l[f]=i>=0?(row[i]||''):'';});return l;}
+function rowToLead(row){const l={};FIELDS.forEach(f=>{const i=ci(f);l[f]=i>=0?(row[i]||''):'';});
+  // Normalise date fields: if value looks like a serial number, convert it
+  ['Date Added','FU1 Date','FU2 Date','FU3 Date'].forEach(f=>{
+    const v=l[f];
+    if(v&&/^\d{4,6}$/.test(String(v).trim())){
+      const n=parseInt(v);
+      // Excel/Sheets serial: days since 1899-12-30
+      const d=new Date(Date.UTC(1899,11,30));d.setUTCDate(d.getUTCDate()+n);
+      l[f]=`${String(d.getUTCDate()).padStart(2,'0')}/${String(d.getUTCMonth()+1).padStart(2,'0')}/${d.getUTCFullYear()}`;
+    }
+  });
+  return l;
+}
 function leadToRow(lead){const max=maxCI();const row=new Array(max+1).fill('');FIELDS.forEach(f=>{const i=ci(f);if(i>=0)row[i]=lead[f]||'';});return row;}
 
 function parseDate(s){
-  if(!s)return null;s=String(s).trim();
-  const dm=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+  if(!s)return null;
+  // Google Sheets / Excel serial number (days since 30 Dec 1899)
+  if(typeof s==='number'||(typeof s==='string'&&/^\d{4,6}$/.test(String(s).trim()))){
+    const n=parseInt(s);if(n>20000&&n<100000){const d=new Date(Date.UTC(1899,11,30));d.setUTCDate(d.getUTCDate()+n);return new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate());}
+  }
+  s=String(s).trim();
+  // DD/MM/YYYY or DD-MM-YYYY or DD.MM.YYYY or DD/MM/YY
+  const dm=s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
   if(dm){let y=parseInt(dm[3]);if(y<100)y+=2000;return new Date(y,parseInt(dm[2])-1,parseInt(dm[1]));}
+  // YYYY-MM-DD (ISO)
   const ym=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if(ym)return new Date(parseInt(ym[1]),parseInt(ym[2])-1,parseInt(ym[3]));
+  // DD-Mon-YY or DD-Mon-YYYY or DD Mon YYYY  e.g. "01-Mar-26", "1 Mar 2026"
+  const mn=s.match(/^(\d{1,2})[\-\/\s]+([A-Za-z]{3})[\-\/\s]+(\d{2,4})$/);
+  if(mn){const months={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};const m=months[mn[2].toLowerCase()];if(m!==undefined){let y=parseInt(mn[3]);if(y<100)y+=2000;return new Date(y,m,parseInt(mn[1]));}}
+  // Mon DD, YYYY  e.g. "Mar 1, 2026"
+  const us=s.match(/^([A-Za-z]{3})\s+(\d{1,2}),?\s+(\d{4})$/);
+  if(us){const months={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};const m=months[us[1].toLowerCase()];if(m!==undefined)return new Date(parseInt(us[3]),m,parseInt(us[2]));}
   return null;
 }
 function toISO(s){if(!s)return'';const d=parseDate(s);if(!d||isNaN(d))return'';return d.toISOString().split('T')[0];}
@@ -1280,6 +1317,7 @@ function loadDemo(){
   document.getElementById('appScreen').style.display='block';
   loadLocalCfg();initUI();
   leads=generateDemoLeads();
+  popAgents();rebuildSourceFilter();rebuildShootFilter();
   applyFilters();renderReport();updateAlertBanner();
   switchTab('tests');setTimeout(()=>runTests(),300);
 }
@@ -1446,10 +1484,17 @@ async function loadLeads(){
   if(!SHEET_ID){toast('No Sheet ID set — open Settings → Sheet Connection','err');return;}
   sync(true);
   try{
-    // Use a wide safe range — Sheets API returns only columns that exist
-    const safeRange=`${SHEET_NAME}!A2:Z`;
-    const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SHEET_ID,range:safeRange});
-    leads=(r.result.values||[]).map((row,i)=>{const l=rowToLead(row);l._ri=i+2;l._wm=wmCheck(l);return l;}).filter(l=>l['Phone']||l['Name']);
+    // Sheet has 3 header rows (title, section labels, column names) — data starts at row 4
+    const safeRange=`${SHEET_NAME}!A4:Z`;
+    const r=await gapi.client.sheets.spreadsheets.values.get({
+      spreadsheetId:SHEET_ID,
+      range:safeRange,
+      valueRenderOption:'FORMATTED_VALUE',  // get dates as formatted strings, not serials
+      dateTimeRenderOption:'FORMATTED_STRING'
+    });
+    leads=(r.result.values||[]).map((row,i)=>{const l=rowToLead(row);l._ri=i+4;l._wm=wmCheck(l);return l;}).filter(l=>l['Phone']||l['Name']);
+    // Rebuild filters from actual lead data so all values are filterable
+    popAgents();rebuildSourceFilter();rebuildShootFilter();
     applyFilters();renderReport();updateAlertBanner();
     sync(false);
     if(!leads.length)toast('Sheet loaded but no leads found. Check tab name "'+SHEET_NAME+'" matches your sheet exactly.','ok');
@@ -1528,12 +1573,11 @@ function wmCheck(lead){
   const dObj=parseDate(da);if(!dObj)return false;
   return(ad+Math.floor((new Date()-dObj)/86400000))>wd;
 }
-function getLastNote(l){return l['FU4 Notes']||l['FU3 Notes']||l['FU2 Notes']||l['FU1 Notes']||l['General Notes']||'';}
+function getLastNote(l){return l['FU3 Notes']||l['FU3 Outcome']||l['FU2 Notes']||l['FU2 Outcome']||l['FU1 Notes']||l['FU1 Outcome']||l['General Notes']||'';}
 function getStage(l){
-  if(l['FU4 Notes']||l['FU4 Date'])return CFG.fuLabels[3]+' ✓';
-  if(l['FU3 Notes']||l['FU3 Date'])return CFG.fuLabels[2]+' → '+CFG.fuLabels[3];
-  if(l['FU2 Notes']||l['FU2 Date'])return CFG.fuLabels[1]+' → '+CFG.fuLabels[2];
-  if(l['FU1 Notes']||l['FU1 Date'])return CFG.fuLabels[0]+' → '+CFG.fuLabels[1];
+  if(l['FU3 Notes']||l['FU3 Outcome']||l['FU3 Date'])return CFG.fuLabels[2]+' ✓';
+  if(l['FU2 Notes']||l['FU2 Outcome']||l['FU2 Date'])return CFG.fuLabels[1]+' → '+CFG.fuLabels[2];
+  if(l['FU1 Notes']||l['FU1 Outcome']||l['FU1 Date'])return CFG.fuLabels[0]+' → '+CFG.fuLabels[1];
   return'New → '+CFG.fuLabels[0];
 }
 function isClosed(l){
@@ -1542,8 +1586,8 @@ function isClosed(l){
   const closedTags=['booked','done','cold','invalid'];
   const storedTag=resolveTagKey((l['Tag']||''));
   if(storedTag&&closedTags.includes(storedTag))return true;
-  // Also close based on explicit closing notes
-  return['FU1 Notes','FU2 Notes','FU3 Notes','FU4 Notes'].some(k=>{
+  // Also close based on explicit closing notes or outcomes
+  return['FU1 Notes','FU1 Outcome','FU2 Notes','FU2 Outcome','FU3 Notes','FU3 Outcome'].some(k=>{
     const v=(l[k]||'').toLowerCase();
     return v.includes('booked')||v.includes('booking confirmed')||
            v.includes('shoot done')||v.includes('session done')||
@@ -1553,13 +1597,11 @@ function isClosed(l){
   });
 }
 function nextFUDate(l){
-  // Returns the date for the NEXT expected follow-up (stage with date but no notes)
-  // This is separate from reminderDate — it's for overdue/due tracking
-  if((l['FU3 Notes']||l['FU3 Date'])&&!l['FU4 Notes']&&l['FU4 Date'])return l['FU4 Date'];
-  if((l['FU2 Notes']||l['FU2 Date'])&&!l['FU3 Notes']&&l['FU3 Date'])return l['FU3 Date'];
-  if((l['FU1 Notes']||l['FU1 Date'])&&!l['FU2 Notes']&&l['FU2 Date'])return l['FU2 Date'];
-  if(l['FU1 Notes']&&!l['FU2 Date'])return''; // has contact, no next date set
-  if(!l['FU1 Notes']&&l['FU1 Date'])return l['FU1 Date']; // first contact date
+  // Returns the date for the NEXT expected follow-up (stage with date but no notes/outcome yet)
+  if((l['FU2 Notes']||l['FU2 Outcome']||l['FU2 Date'])&&!(l['FU3 Notes']||l['FU3 Outcome'])&&l['FU3 Date'])return l['FU3 Date'];
+  if((l['FU1 Notes']||l['FU1 Outcome']||l['FU1 Date'])&&!(l['FU2 Notes']||l['FU2 Outcome'])&&l['FU2 Date'])return l['FU2 Date'];
+  if((l['FU1 Notes']||l['FU1 Outcome'])&&!l['FU2 Date'])return''; // has contact, no next date set
+  if(!(l['FU1 Notes']||l['FU1 Outcome'])&&l['FU1 Date'])return l['FU1 Date']; // first contact date
   return'';
 }
 // Separate: is this lead overdue (past FU date with completed stage note)?
@@ -1646,12 +1688,12 @@ function applyFilters(){
     if(isClosed(l))return false;
     if(l._archived)return false;
     if(search){const nm=(l['Name']||'').toLowerCase(),ph=(l['Phone']||'').toLowerCase();if(!nm.includes(search)&&!ph.includes(search))return false;}
-    if(agent&&l['Agent']!==agent)return false;
-    if(source&&l['Source']!==source)return false;
-    if(shoot&&(l['Shoot Type']||'')!==shoot)return false;
+    if(agent&&(l['Agent']||'').toLowerCase()!==agent.toLowerCase())return false;
+    if(source&&(l['Source']||'').toLowerCase()!==source.toLowerCase())return false;
+    if(shoot&&(l['Shoot Type']||'').toLowerCase()!==shoot.toLowerCase())return false;
     if(tagF&&getTag(l)!==tagF)return false;
     if(fu){
-      const h1=!!(l['FU1 Notes']||l['FU1 Date']);const h2=!!(l['FU2 Notes']||l['FU2 Date']);const h3=!!(l['FU3 Notes']||l['FU3 Date']);
+      const h1=!!(l['FU1 Notes']||l['FU1 Outcome']||l['FU1 Date']);const h2=!!(l['FU2 Notes']||l['FU2 Outcome']||l['FU2 Date']);const h3=!!(l['FU3 Notes']||l['FU3 Outcome']||l['FU3 Date']);
       if(fu==='new'&&h1)return false;if(fu==='fu1done'&&(!h1||h2))return false;
       if(fu==='fu2done'&&(!h2||h3))return false;if(fu==='fu3done'&&!h3)return false;
     }
@@ -1850,7 +1892,7 @@ function openPanel(ri,fromQCM=false){
   document.getElementById('panelNav').style.display=(qcmActive&&!isNew)?'flex':'none';
   document.getElementById('panelTagBadge').style.display='none';
 
-  const ids=['pName','pPhone','pLoc','pAge','pNotes','pShoot','p1s','p2s','p3s','p4s','p1d','p2d','p3d','p4d','p1n','p2n','p3n','p4n'];
+  const ids=['pName','pPhone','pLoc','pAge','pNotes','pShoot','p1s','p2s','p3s','p1d','p2d','p3d','p1n','p2n','p3n','p1o','p2o','p3o'];
   ids.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('pRI').value=ri||'';
   document.getElementById('waBtn').style.display='none';
@@ -1873,12 +1915,20 @@ function openPanel(ri,fromQCM=false){
     document.getElementById('pNotes').value=l['General Notes']||'';
     setOBtn('shootOpts',l['Shoot Type']||'','sb');
     document.getElementById('pShoot').value=l['Shoot Type']||'';
-    const fuMap=[['p1d','FU1 Date','p1n','FU1 Notes','p1s',0],['p2d','FU2 Date','p2n','FU2 Notes','p2s',1],['p3d','FU3 Date','p3n','FU3 Notes','p3s',2],['p4d','FU4 Date','p4n','FU4 Notes','p4s',3]];
-    fuMap.forEach(([dd,dk,nn,nk,ss,idx])=>{
+    // fuMap: [dateInputId, dateField, notesInputId, notesField, outcomeInputId, outcomeField, stageTagId, stageIndex]
+    const fuMap=[
+      ['p1d','FU1 Date','p1n','FU1 Notes','p1o','FU1 Outcome','p1s',0],
+      ['p2d','FU2 Date','p2n','FU2 Notes','p2o','FU2 Outcome','p2s',1],
+      ['p3d','FU3 Date','p3n','FU3 Notes','p3o','FU3 Outcome','p3s',2],
+    ];
+    fuMap.forEach(([dd,dk,nn,nk,oo,ok,ss,idx])=>{
       document.getElementById(dd).value=toISO(l[dk]);
       document.getElementById(nn).value=l[nk]||'';
-      document.getElementById(ss).value=l[nk]||'';
-      setOBtn('fu'+(idx+1)+'Opts',l[nk]||'','sg');
+      if(document.getElementById(oo))document.getElementById(oo).value=l[ok]||'';
+      // Outcome button highlight: prefer stored outcome label, fall back to notes
+      const outcomeVal=l[ok]||l[nk]||'';
+      document.getElementById(ss).value=resolveTagKey(outcomeVal)||'';
+      setOBtn('fu'+(idx+1)+'Opts',l[ok]||'','sg');
     });
     if(qcmActive){
       document.getElementById('qcmCount').textContent=`${qcmIdx+1} / ${qcmQueue.length}`;
@@ -1897,15 +1947,13 @@ function openPanel(ri,fromQCM=false){
 }
 function closePanel(){document.getElementById('pov').classList.remove('open');document.getElementById('sp').classList.remove('open');}
 function unlockFU(){
-  // Unlock next stage if current stage has a date OR an outcome selected
-  const h1=!!(document.getElementById('p1d').value||document.getElementById('p1s').value||document.getElementById('p1n').value);
-  const h2=!!(document.getElementById('p2d').value||document.getElementById('p2s').value||document.getElementById('p2n').value);
-  const h3=!!(document.getElementById('p3d').value||document.getElementById('p3s').value||document.getElementById('p3n').value);
+  // Unlock next stage if current stage has a date OR an outcome selected OR notes entered
+  const h1=!!(document.getElementById('p1d').value||document.getElementById('p1s').value||document.getElementById('p1n').value||document.getElementById('p1o')?.value);
+  const h2=!!(document.getElementById('p2d').value||document.getElementById('p2s').value||document.getElementById('p2n').value||document.getElementById('p2o')?.value);
   document.getElementById('fu2b').classList.toggle('locked',!h1);
   document.getElementById('fu3b').classList.toggle('locked',!h2);
-  document.getElementById('fu4b').classList.toggle('locked',!h3);
 }
-function clearOBtns(){['shootOpts','fu1Opts','fu2Opts','fu3Opts','fu4Opts'].forEach(id=>{document.querySelectorAll(`#${id} .ob`).forEach(b=>b.className='ob');});}
+function clearOBtns(){['shootOpts','fu1Opts','fu2Opts','fu3Opts'].forEach(id=>{document.querySelectorAll(`#${id} .ob`).forEach(b=>b.className='ob');});}
 function setOBtn(gid,val,cls){if(!val)return;document.querySelectorAll(`#${gid} .ob`).forEach(b=>{if(b.dataset.val===val)b.classList.add(cls);});}
 function selectOB(gid,val,cls,hid){
   document.querySelectorAll(`#${gid} .ob`).forEach(b=>b.className='ob');
@@ -1919,8 +1967,10 @@ function selectFUOutcome(stage,label,cls){
   document.querySelectorAll(`#${gid} .ob`).forEach(b=>b.className='ob');
   document.querySelectorAll(`#${gid} .ob`).forEach(b=>{if(b.dataset.val===label)b.classList.add(cls);});
   // Map the outcome label to a tag key and store in hidden pXs field
-  const tagKey=resolveTagKey(label)||deriveTag({'FU1 Notes':label});
+  const tagKey=resolveTagKey(label)||deriveTag({'FU1 Outcome':label});
   document.getElementById(`p${stage}s`).value=tagKey;
+  // Also store the raw outcome label in pXo for writing to FU Outcome column
+  const pOEl=document.getElementById(`p${stage}o`);if(pOEl)pOEl.value=label;
   // Show the resulting tag in the panel header
   const td=TAG_DEFS[tagKey]||TAG_DEFS.new;
   document.getElementById('panelTagBadge').style.display='inline-flex';
@@ -1937,22 +1987,20 @@ async function saveLead(){
   const ri=document.getElementById('pRI').value;const isNew=!ri;
   const today=todayISO();const ex=isNew?{}:(leads.find(l=>l._ri==ri)||{});
   const fv=id=>{const el=document.getElementById(id);return el?el.value.trim():'';};
-  // Read manual tag chosen via outcome buttons (stored in hidden p1s-p4s)
-  // p1s-p4s hold tagKey strings; pick the last non-empty one (most recent stage)
-  const manualTag=[fv('p4s'),fv('p3s'),fv('p2s'),fv('p1s')].find(t=>t&&t.trim())||'';
+  // Read manual tag chosen via outcome buttons (stored in hidden p1s-p3s)
+  const manualTag=[fv('p3s'),fv('p2s'),fv('p1s')].find(t=>t&&t.trim())||'';
   const lead={
     'Date Added':isNew?today:(ex['Date Added']||today),
     'Name':fv('pName'),'Phone':fv('pPhone'),'Agent':document.getElementById('pAgent').value,
     'Source':document.getElementById('pSource').value,'Location':fv('pLoc'),'Baby Age':fv('pAge'),
-    'Shoot Type':fv('pShoot'),'FU1 Date':fv('p1d'),'FU1 Notes':fv('p1n'),
-    'FU2 Date':fv('p2d'),'FU2 Notes':fv('p2n'),'FU3 Date':fv('p3d'),'FU3 Notes':fv('p3n'),
-    'FU4 Date':fv('p4d'),'FU4 Notes':fv('p4n'),'General Notes':fv('pNotes'),
-    'Tag':'','Stage':''
+    'Shoot Type':fv('pShoot'),
+    'FU1 Date':fv('p1d'),'FU1 Outcome':fv('p1o'),'FU1 Notes':fv('p1n'),
+    'FU2 Date':fv('p2d'),'FU2 Outcome':fv('p2o'),'FU2 Notes':fv('p2n'),
+    'FU3 Date':fv('p3d'),'FU3 Outcome':fv('p3o'),'FU3 Notes':fv('p3n'),
+    'Tag':'','General Notes':fv('pNotes')
   };
   // Tag priority: 1) Manual outcome button selection, 2) auto-derive from notes, 3) previous stored tag
   lead['Tag']=manualTag||deriveTag(lead)||ex['Tag']||'';
-  // Stage: Closed if tag maps to a closing outcome, else Active
-  lead['Stage']=isClosed(lead)?'Closed':'Active';
   lead['_wm']=wmCheck(lead);
   if(!lead['Phone']){toast('Phone number is required','err');return;}
   // Duplicate phone check — warn and block on new leads
@@ -1988,9 +2036,7 @@ async function saveLead(){
     if(qcmActive)qcmNext();
   }catch(e){toast('Save failed: '+e.message,'err');}
 }
-function lead_temp(fv,fuNote){
-  return{'FU1 Notes':fuNote('p1n','p1s'),'FU2 Notes':fuNote('p2n','p2s'),'FU3 Notes':fuNote('p3n','p3s'),'FU4 Notes':fuNote('p4n','p4s')};
-}
+// lead_temp removed — no longer needed (3-FU structure)
 async function deleteLead(){
   const ri=parseInt(document.getElementById('pRI').value);
   if(!ri||!confirm('Delete this lead?'))return;
@@ -2118,177 +2164,239 @@ function setReportRange(preset){
 }
 
 function renderReport(){
-  if(!REPORT_RANGE.from)setReportRange('today'); // Initialize on first load
-  
+  if(!REPORT_RANGE.from)setReportRange('today');
+
   const inRange=ds=>{
-    const dt=parseDate(ds);
-    if(!dt)return false;
+    const dt=parseDate(ds);if(!dt)return false;
     const iso=dt.toISOString().split('T')[0];
-    return iso>=REPORT_RANGE.from && iso<=REPORT_RANGE.to;
+    return iso>=REPORT_RANGE.from&&iso<=REPORT_RANGE.to;
   };
-  
-  // Core filters
-  const newLeads=leads.filter(l=>inRange(l['Date Added']));
-  const fuActivity=leads.filter(l=>['FU1 Date','FU2 Date','FU3 Date','FU4 Date'].some(k=>inRange(l[k])));
-  const booked=leads.filter(l=>getTag(l)==='booked');
-  const lost=leads.filter(l=>getTag(l)==='cold');
-  const active=leads.filter(l=>!isClosed(l));
-  const noName=leads.filter(l=>!(l['Name']||'').trim());
-  
-  // Stat card helper
+
+  // ── ALL METRICS SCOPED TO RANGE ──────────────────────────────────
+  const rangeLeads=leads.filter(l=>inRange(l['Date Added']));
+  const fuActivity=leads.filter(l=>['FU1 Date','FU2 Date','FU3 Date'].some(k=>inRange(l[k])));
+  const booked=rangeLeads.filter(l=>getTag(l)==='booked');
+  const lost=rangeLeads.filter(l=>getTag(l)==='cold');
+  const active=leads.filter(l=>!isClosed(l)); // pipeline is always "right now"
+  const noName=rangeLeads.filter(l=>!(l['Name']||'').trim());
+  const responded=rangeLeads.filter(l=>l['FU1 Notes']||l['FU1 Outcome']||l['FU2 Notes']||l['FU2 Outcome']||l['FU3 Notes']||l['FU3 Outcome']);
+
+  const rangeLabel=REPORT_RANGE.from===REPORT_RANGE.to
+    ?fmtDate(REPORT_RANGE.from)
+    :`${fmtDate(REPORT_RANGE.from)} – ${fmtDate(REPORT_RANGE.to)}`;
+
+  // ── STAT CARDS ───────────────────────────────────────────────────
   const sc=(val,label,hint,arr,color='')=>`
     <div class="sc ${arr.length?'clickable':''}" onclick="${arr.length?`showPopup('${esc(label)}',${JSON.stringify(arr.map(l=>l._ri))})`:''}" style="${color?'border-color:'+color:''}">
       <div class="sv" style="${color?'color:'+color:''}">${val}</div>
       <div class="sl">${label}</div>${hint?`<div class="sa">${hint}</div>`:''}
     </div>`;
-  
-  // Top stats
-  const rangeLabel=REPORT_RANGE.from===REPORT_RANGE.to?REPORT_RANGE.from:`${REPORT_RANGE.from} to ${REPORT_RANGE.to}`;
+
+  const convRate=rangeLeads.length?(booked.length/rangeLeads.length*100).toFixed(1):0;
+  const responseRate=rangeLeads.length?(responded.length/rangeLeads.length*100).toFixed(1):0;
+
   document.getElementById('reportStats').innerHTML=
-    sc(newLeads.length,'New Leads',rangeLabel,newLeads)+
+    sc(rangeLeads.length,'New Leads',rangeLabel,rangeLeads)+
     sc(fuActivity.length,'FU Activity',rangeLabel,fuActivity)+
-    sc(booked.length,'Total Booked','all time',booked,'var(--t-booked)')+
-    sc(lost.length,'Total Lost','all time',lost,'var(--t-cold)')+
+    sc(booked.length,'Converted',rangeLabel,booked,'var(--t-booked)')+
+    sc(lost.length,'Lost',rangeLabel,lost,'var(--t-cold)')+
     sc(active.length,'Active Pipeline','right now',active)+
-    sc(noName.length,'No Name Yet','needs cleanup',noName,'var(--t-oop)');
-  
-  // Agent Workload
+    sc(noName.length,'No Name Yet',rangeLabel,noName,'var(--t-oop)');
+
+  // ── AGENT WORKLOAD (all range-scoped) ────────────────────────────
   const agentData={};
-  CFG.agents.forEach(a=>agentData[a]={new:0,fu:0,converted:0,lost:0,active:0});
-  agentData['Unassigned']={new:0,fu:0,converted:0,lost:0,active:0};
-  
-  newLeads.forEach(l=>{
-    const a=l['Agent']||'Unassigned';
-    if(!agentData[a])agentData[a]={new:0,fu:0,converted:0,lost:0,active:0};
-    agentData[a].new++;
-  });
-  
-  fuActivity.forEach(l=>{
-    const a=l['Agent']||'Unassigned';
-    if(!agentData[a])agentData[a]={new:0,fu:0,converted:0,lost:0,active:0};
-    agentData[a].fu++;
-  });
-  
-  leads.forEach(l=>{
-    const a=l['Agent']||'Unassigned';
-    if(!agentData[a])agentData[a]={new:0,fu:0,converted:0,lost:0,active:0};
+  const ensureAgent=a=>{if(!agentData[a])agentData[a]={new:0,fu:0,converted:0,lost:0,active:0};};
+
+  rangeLeads.forEach(l=>{const a=l['Agent']||'Unassigned';ensureAgent(a);agentData[a].new++;});
+  fuActivity.forEach(l=>{const a=l['Agent']||'Unassigned';ensureAgent(a);agentData[a].fu++;});
+  rangeLeads.forEach(l=>{
+    const a=l['Agent']||'Unassigned';ensureAgent(a);
     if(getTag(l)==='booked')agentData[a].converted++;
     if(getTag(l)==='cold')agentData[a].lost++;
-    if(!isClosed(l))agentData[a].active++;
   });
-  
+  leads.filter(l=>!isClosed(l)).forEach(l=>{const a=l['Agent']||'Unassigned';ensureAgent(a);agentData[a].active++;});
+
   document.getElementById('reportAgentWorkload').innerHTML=`
-    <h3>👥 Agent Workload</h3>
+    <h3>👥 Agent Workload <span style="font-size:11px;color:var(--td);font-weight:400">(${rangeLabel})</span></h3>
     <table class="rt">
-      <tr><th>Agent</th><th>New</th><th>FUs</th><th>Converted</th><th>Lost</th><th>Active</th></tr>
-      ${Object.entries(agentData).filter(([a,d])=>d.new+d.fu+d.converted+d.lost+d.active>0).map(([a,d])=>`
+      <tr><th>Agent</th><th>New</th><th>FUs</th><th>Conv</th><th>Lost</th><th>Active</th></tr>
+      ${Object.entries(agentData).filter(([,d])=>d.new+d.fu+d.converted+d.lost+d.active>0).map(([a,d])=>`
         <tr>
           <td style="font-weight:500">${esc(a)}</td>
-          <td>${d.new||'—'}</td>
-          <td>${d.fu||'—'}</td>
+          <td>${d.new||'—'}</td><td>${d.fu||'—'}</td>
           <td style="color:var(--t-booked)">${d.converted||'—'}</td>
           <td style="color:var(--t-cold)">${d.lost||'—'}</td>
           <td><strong>${d.active}</strong></td>
-        </tr>
-      `).join('')||'<tr><td colspan="6" style="color:var(--td);padding:9px">No agent activity</td></tr>'}
+        </tr>`).join('')||'<tr><td colspan="6" style="color:var(--td);padding:9px">No agent activity</td></tr>'}
     </table>`;
-  
-  // Source Performance
-  const sourceData={};
-  newLeads.forEach(l=>{
-    const s=l['Source']||'Unknown';
-    if(!sourceData[s])sourceData[s]={leads:0,booked:0,avgDays:0,days:[]};
-    sourceData[s].leads++;
-    if(getTag(l)==='booked'){
-      sourceData[s].booked++;
-      const daysDiff=Math.floor((parseDate(l['FU4 Date']||l['FU3 Date']||l['FU2 Date']||l['FU1 Date']||l['Date Added'])-parseDate(l['Date Added']))/86400000);
-      if(daysDiff>=0)sourceData[s].days.push(daysDiff);
+
+  // ── SOURCE PERFORMANCE + QUALITY (range-scoped) ──────────────────
+  const srcData={};
+  const ensureSrc=s=>{if(!srcData[s])srcData[s]={leads:0,booked:0,responded:0,cnr:0,lost:0,days:[]};};
+
+  rangeLeads.forEach(l=>{
+    const s=(l['Source']||'Unknown').trim()||'Unknown';
+    ensureSrc(s);
+    srcData[s].leads++;
+    const tag=getTag(l);
+    if(tag==='booked'){
+      srcData[s].booked++;
+      const start=parseDate(l['Date Added']);
+      const end=parseDate(l['FU3 Date']||l['FU2 Date']||l['FU1 Date']);
+      if(start&&end){const diff=Math.floor((end-start)/86400000);if(diff>=0)srcData[s].days.push(diff);}
     }
+    if(tag==='cold')srcData[s].lost++;
+    // Responded = any FU outcome/note exists
+    if(l['FU1 Notes']||l['FU1 Outcome']||l['FU2 Notes']||l['FU2 Outcome']||l['FU3 Notes']||l['FU3 Outcome'])srcData[s].responded++;
+    // CNR = most recent outcome/note matches no-response patterns
+    const lastNote=getLastNote(l).toLowerCase();
+    if(lastNote.includes('cnr')||lastNote.includes('no response')||lastNote.includes('cna')||lastNote.includes('not answered')||lastNote.includes('switched off')||lastNote.includes('busy'))srcData[s].cnr++;
   });
-  
-  Object.keys(sourceData).forEach(s=>{
-    const d=sourceData[s].days;
-    sourceData[s].avgDays=d.length?(d.reduce((a,b)=>a+b,0)/d.length).toFixed(1):0;
+
+  Object.keys(srcData).forEach(s=>{
+    const d=srcData[s].days;
+    srcData[s].avgDays=d.length?(d.reduce((a,b)=>a+b,0)/d.length).toFixed(1):null;
   });
-  
+
   document.getElementById('reportSourcePerf').innerHTML=`
-    <h3>📊 Source Performance <span style="font-size:11px;color:var(--td);font-weight:400">(${rangeLabel})</span></h3>
+    <h3>📊 Source Quality <span style="font-size:11px;color:var(--td);font-weight:400">(${rangeLabel})</span></h3>
     <table class="rt">
-      <tr><th>Source</th><th>Leads</th><th>Booked</th><th>Conv %</th><th>Avg Days</th></tr>
-      ${Object.entries(sourceData).sort((a,b)=>b[1].leads-a[1].leads).map(([s,d])=>{
-        const convPct=d.leads?(d.booked/d.leads*100).toFixed(1):0;
+      <tr><th>Source</th><th>Leads</th><th>Responded</th><th>CNR</th><th>Conv</th><th>Conv%</th><th>Lost</th><th>Avg Days</th></tr>
+      ${Object.entries(srcData).sort((a,b)=>b[1].leads-a[1].leads).map(([s,d])=>{
+        const convPct=d.leads?(d.booked/d.leads*100).toFixed(0):0;
+        const respPct=d.leads?(d.responded/d.leads*100).toFixed(0):0;
+        const cnrPct=d.leads?(d.cnr/d.leads*100).toFixed(0):0;
         return`<tr>
           <td style="font-weight:500">${esc(s)}</td>
           <td>${d.leads}</td>
+          <td>${d.responded} <span style="color:var(--td);font-size:10px">(${respPct}%)</span></td>
+          <td style="color:var(--t-nore)">${d.cnr} <span style="color:var(--td);font-size:10px">(${cnrPct}%)</span></td>
           <td style="color:var(--t-booked)">${d.booked||'—'}</td>
-          <td><strong>${convPct}%</strong></td>
+          <td><strong style="color:${parseInt(convPct)>=10?'var(--t-booked)':parseInt(convPct)>=5?'var(--ac)':'var(--tm)'}">${convPct}%</strong></td>
+          <td style="color:var(--t-cold)">${d.lost||'—'}</td>
           <td>${d.avgDays?d.avgDays+'d':'—'}</td>
         </tr>`;
-      }).join('')||'<tr><td colspan="5" style="color:var(--td);padding:9px">No source data</td></tr>'}
+      }).join('')||'<tr><td colspan="8" style="color:var(--td);padding:9px">No source data in range</td></tr>'}
     </table>`;
-  
-  // Lead Quality Metrics
-  const totalContacted=leads.length;
-  const totalBooked=booked.length;
-  const convRate=totalContacted?(totalBooked/totalContacted*100).toFixed(1):0;
-  const responded=leads.filter(l=>l['FU1 Notes']||l['FU2 Notes']||l['FU3 Notes']||l['FU4 Notes']).length;
-  const responseRate=totalContacted?(responded/totalContacted*100).toFixed(1):0;
-  
-  const bookedWithDates=booked.filter(l=>l['Date Added']&&(l['FU4 Date']||l['FU3 Date']||l['FU2 Date']||l['FU1 Date']));
+
+  // ── LEAD QUALITY METRICS (range-scoped) ──────────────────────────
+  const bookedWithDates=booked.filter(l=>l['Date Added']&&(l['FU3 Date']||l['FU2 Date']||l['FU1 Date']));
   const avgConvDays=bookedWithDates.length
     ?(bookedWithDates.reduce((sum,l)=>{
-      const start=parseDate(l['Date Added']);
-      const end=parseDate(l['FU4 Date']||l['FU3 Date']||l['FU2 Date']||l['FU1 Date']);
-      return sum+(end-start)/86400000;
-    },0)/bookedWithDates.length).toFixed(1)
+        const s=parseDate(l['Date Added']),e=parseDate(l['FU3 Date']||l['FU2 Date']||l['FU1 Date']);
+        return sum+(e&&s?(e-s)/86400000:0);
+      },0)/bookedWithDates.length).toFixed(1)
     :0;
-  
+
   document.getElementById('reportQuality').innerHTML=`
-    <h3>📈 Lead Quality Metrics <span style="font-size:11px;color:var(--td);font-weight:400">(all time)</span></h3>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+    <h3>📈 Lead Quality <span style="font-size:11px;color:var(--td);font-weight:400">(${rangeLabel})</span></h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
       <div style="background:var(--sf2);padding:14px;border-radius:8px;border:1px solid var(--bd)">
         <div style="font-size:24px;font-weight:600;color:var(--t-booked)">${convRate}%</div>
         <div style="font-size:11px;color:var(--tm);margin-top:2px">Conversion Rate</div>
-        <div style="font-size:10px;color:var(--td);margin-top:4px">${totalBooked} booked / ${totalContacted} total</div>
+        <div style="font-size:10px;color:var(--td);margin-top:4px">${booked.length} booked / ${rangeLeads.length} new leads</div>
       </div>
       <div style="background:var(--sf2);padding:14px;border-radius:8px;border:1px solid var(--bd)">
         <div style="font-size:24px;font-weight:600;color:var(--t-int)">${responseRate}%</div>
         <div style="font-size:11px;color:var(--tm);margin-top:2px">Response Rate</div>
-        <div style="font-size:10px;color:var(--td);margin-top:4px">${responded} responded / ${totalContacted} contacted</div>
+        <div style="font-size:10px;color:var(--td);margin-top:4px">${responded.length} responded / ${rangeLeads.length} new leads</div>
       </div>
       <div style="background:var(--sf2);padding:14px;border-radius:8px;border:1px solid var(--bd)">
-        <div style="font-size:24px;font-weight:600;color:var(--ac)">${avgConvDays}</div>
+        <div style="font-size:24px;font-weight:600;color:var(--ac)">${avgConvDays||'—'}</div>
         <div style="font-size:11px;color:var(--tm);margin-top:2px">Avg Days to Convert</div>
-        <div style="font-size:10px;color:var(--td);margin-top:4px">From first contact to booking</div>
+        <div style="font-size:10px;color:var(--td);margin-top:4px">Lead added → booking</div>
       </div>
       <div style="background:var(--sf2);padding:14px;border-radius:8px;border:1px solid var(--bd)">
         <div style="font-size:24px;font-weight:600;color:var(--t-cold)">${lost.length}</div>
         <div style="font-size:11px;color:var(--tm);margin-top:2px">Lost Leads</div>
-        <div style="font-size:10px;color:var(--td);margin-top:4px">Tagged as cold/not interested</div>
+        <div style="font-size:10px;color:var(--td);margin-top:4px">Cold / not interested</div>
       </div>
     </div>`;
-  
-  // FU Activity Breakdown (for selected range)
-  const fm={};
-  [['FU1 Date','FU1 Notes',CFG.fuLabels[0]],['FU2 Date','FU2 Notes',CFG.fuLabels[1]],['FU3 Date','FU3 Notes',CFG.fuLabels[2]],['FU4 Date','FU4 Notes',CFG.fuLabels[3]]].forEach(([dk,nk,label])=>{
-    leads.filter(l=>inRange(l[dk])&&l[nk]).forEach(l=>{
-      const k=`${label} → ${(l[nk]||'').slice(0,30)}`;
-      fm[k]=(fm[k]||{count:0,ris:[]});
-      fm[k].count++;
-      fm[k].ris.push(l._ri);
+
+  // ── FU ACTIVITY BREAKDOWN ─────────────────────────────────────────
+  // Single day: outcome summary table
+  // 2–7 days: date × FU-stage matrix
+  const fromD=parseDate(REPORT_RANGE.from),toD=parseDate(REPORT_RANGE.to);
+  const dayCount=fromD&&toD?Math.round((toD-fromD)/86400000)+1:1;
+  const clampedDays=Math.min(dayCount,7);
+
+  if(dayCount<=1){
+    // Single day: outcome breakdown
+    const fm={};
+    [['FU1 Date','FU1 Outcome',CFG.fuLabels[0]],['FU2 Date','FU2 Outcome',CFG.fuLabels[1]],['FU3 Date','FU3 Outcome',CFG.fuLabels[2]]].forEach(([dk,ok,label])=>{
+      leads.filter(l=>inRange(l[dk])&&(l[ok]||l[dk.replace('Date','Notes')])).forEach(l=>{
+        const outcome=(l[ok]||l[dk.replace('Date','Notes')]||'').slice(0,35);
+        const k=`${label} → ${outcome||'(done)'}`;
+        fm[k]=fm[k]||{count:0,ris:[]};
+        fm[k].count++;fm[k].ris.push(l._ri);
+      });
     });
-  });
-  
-  document.getElementById('reportByFU').innerHTML=`
-    <h3>📞 Follow-up Activity Breakdown <span style="font-size:11px;color:var(--td);font-weight:400">(${rangeLabel})</span></h3>
-    <table class="rt">
-      <tr><th>Stage / Outcome</th><th>Count</th></tr>
-      ${Object.entries(fm).sort((a,b)=>b[1].count-a[1].count).map(([k,{count,ris}])=>`
-        <tr class="rlink" onclick="showPopup('${esc(k)}',${JSON.stringify(ris)})">
-          <td>${esc(k)}</td><td><strong>${count}</strong> ↗</td>
+    document.getElementById('reportByFU').innerHTML=`
+      <h3>📞 Follow-up Activity <span style="font-size:11px;color:var(--td);font-weight:400">(${rangeLabel})</span></h3>
+      <table class="rt">
+        <tr><th>Stage / Outcome</th><th>Count</th></tr>
+        ${Object.entries(fm).sort((a,b)=>b[1].count-a[1].count).map(([k,{count,ris}])=>`
+          <tr class="rlink" onclick="showPopup('${esc(k)}',${JSON.stringify(ris)})">
+            <td>${esc(k)}</td><td><strong>${count}</strong> ↗</td>
+          </tr>`).join('')||'<tr><td colspan="2" style="color:var(--td);padding:9px">No FU activity</td></tr>'}
+      </table>`;
+  } else {
+    // Multi-day (up to 7): date rows × FU-stage columns
+    // Build date list
+    const dates=[];
+    for(let i=0;i<clampedDays;i++){
+      const d=new Date(fromD);d.setDate(d.getDate()+i);
+      dates.push(d.toISOString().split('T')[0]);
+    }
+    const stages=[
+      ['FU1 Date','FU1 Outcome',CFG.fuLabels[0]],
+      ['FU2 Date','FU2 Outcome',CFG.fuLabels[1]],
+      ['FU3 Date','FU3 Outcome',CFG.fuLabels[2]]
+    ];
+    // dateRows[iso] = {fu1:{count,ris}, fu2:{count,ris}, fu3:{count,ris}, newLeads:{count,ris}}
+    const dateRows={};
+    dates.forEach(iso=>{
+      dateRows[iso]={fu1:{count:0,ris:[]},fu2:{count:0,ris:[]},fu3:{count:0,ris:[]},newLeads:{count:0,ris:[]}};
+    });
+    leads.forEach(l=>{
+      const da=toISO(l['Date Added']);if(da&&dateRows[da]){dateRows[da].newLeads.count++;dateRows[da].newLeads.ris.push(l._ri);}
+      stages.forEach(([dk,,],si)=>{
+        const fd=toISO(l[dk]);if(fd&&dateRows[fd]){
+          const key=['fu1','fu2','fu3'][si];
+          dateRows[fd][key].count++;dateRows[fd][key].ris.push(l._ri);
+        }
+      });
+    });
+    const fuKeys=['fu1','fu2','fu3'];
+    const fuNames=CFG.fuLabels;
+    document.getElementById('reportByFU').innerHTML=`
+      <h3>📞 Follow-up Activity by Date <span style="font-size:11px;color:var(--td);font-weight:400">(${rangeLabel}${dayCount>7?' · capped at 7 days':''})</span></h3>
+      <table class="rt">
+        <tr><th>Date</th><th>New Leads</th>${fuNames.map(n=>`<th>${esc(n)}</th>`).join('')}<th>Total FUs</th></tr>
+        ${dates.map(iso=>{
+          const row=dateRows[iso];
+          const totalFU=fuKeys.reduce((s,k)=>s+row[k].count,0);
+          const clickCell=(k,label)=>row[k].count
+            ?`<td class="rlink" onclick="showPopup('${esc(iso+' · '+label)}',${JSON.stringify(row[k].ris)})" style="color:var(--ac)"><strong>${row[k].count}</strong> ↗</td>`
+            :`<td style="color:var(--td)">—</td>`;
+          const nlCell=row.newLeads.count
+            ?`<td class="rlink" onclick="showPopup('${esc(iso+' · New Leads')}',${JSON.stringify(row.newLeads.ris)})" style="color:var(--ac)"><strong>${row.newLeads.count}</strong> ↗</td>`
+            :`<td style="color:var(--td)">—</td>`;
+          return`<tr>
+            <td style="font-weight:500;white-space:nowrap">${fmtDate(iso)}</td>
+            ${nlCell}
+            ${fuKeys.map((k,i)=>clickCell(k,fuNames[i])).join('')}
+            <td><strong>${totalFU||'—'}</strong></td>
+          </tr>`;
+        }).join('')}
+        <tr style="background:var(--sf2);font-weight:600;border-top:2px solid var(--bd)">
+          <td>Total</td>
+          <td>${dates.reduce((s,iso)=>s+dateRows[iso].newLeads.count,0)}</td>
+          ${fuKeys.map(k=>`<td>${dates.reduce((s,iso)=>s+dateRows[iso][k].count,0)||'—'}</td>`).join('')}
+          <td>${dates.reduce((s,iso)=>s+fuKeys.reduce((ss,k)=>ss+dateRows[iso][k].count,0),0)}</td>
         </tr>
-      `).join('')||'<tr><td colspan="2" style="color:var(--td);padding:9px">No FU activity in this range</td></tr>'}
-    </table>`;
+      </table>`;
+  }
 }
 
 function showPopup(title,ris){
@@ -2330,7 +2438,7 @@ function exportFiltered(tab){
 function exportReport(){
   const d=document.getElementById('reportDate').value;
   const isoMatch=ds=>{const dt=parseDate(ds);return dt&&dt.toISOString().split('T')[0]===d;};
-  const rel=leads.filter(l=>isoMatch(l['Date Added'])||['FU1 Date','FU2 Date','FU3 Date','FU4 Date'].some(k=>isoMatch(l[k])));
+  const rel=leads.filter(l=>isoMatch(l['Date Added'])||['FU1 Date','FU2 Date','FU3 Date'].some(k=>isoMatch(l[k])));
   exportLeadList(rel,'report_'+d);
 }
 
@@ -2456,7 +2564,7 @@ async function doImport(){
     const ph=(row[phoneCol]||'').replace(/\D/g,'');
     return ph&&!existingPhones.has(ph);
   }).map(row=>{
-    const l={};FIELDS.forEach(f=>l[f]='');l['Date Added']=todayISO();l['Stage']='Active';
+    const l={};FIELDS.forEach(f=>l[f]='');l['Date Added']=todayISO();
     mapping.forEach((f,i)=>{if(f&&f!=='— skip —')l[f]=row[i]||'';});
     l['Tag']=deriveTag(l);
     return leadToRow(l);
@@ -2500,7 +2608,10 @@ function addSource(){const v=document.getElementById('newSourceInput').value.tri
 function removeSource(i){CFG.sources.splice(i,1);renderSourceList();rebuildSourceFilter();populatePanelSource();saveConfig();}
 function rebuildSourceFilter(){
   const sel=document.getElementById('fSource');const cur=sel.value;
-  sel.innerHTML='<option value="">All Sources</option>'+CFG.sources.map(s=>`<option${cur===s?' selected':''}>${esc(s)}</option>`).join('');
+  // Merge CFG sources with any values actually present in loaded leads
+  const inLeads=[...new Set(leads.map(l=>(l['Source']||'').trim()).filter(Boolean))];
+  const allSources=[...new Set([...CFG.sources,...inLeads])].sort();
+  sel.innerHTML='<option value="">All Sources</option>'+allSources.map(s=>`<option${cur===s?' selected':''}>${esc(s)}</option>`).join('');
 }
 function populatePanelSource(){
   const sel=document.getElementById('pSource');if(!sel)return;
@@ -2586,11 +2697,11 @@ function populateYaBar(){
 
 // FU STAGE SETTINGS (label + per-stage outcomes)
 function renderFUStageSettings(){
-  const icons=['📞','🔁','🌡️','🏁'];
+  const icons=['📞','🔁','🏁'];
   document.getElementById('fuStageSettings').innerHTML=CFG.fuLabels.map((label,i)=>`
     <div style="margin-bottom:14px;padding:10px;background:var(--sf2);border-radius:8px;border:1px solid var(--bd)">
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-        <span style="font-size:16px">${icons[i]}</span>
+        <span style="font-size:16px">${icons[i]||'🔁'}</span>
         <label class="fl" style="width:50px">FU ${i+1}</label>
         <input class="fi2" id="fuLabelInp${i}" value="${esc(label)}" placeholder="Stage ${i+1} name" style="flex:1">
       </div>
@@ -2599,8 +2710,8 @@ function renderFUStageSettings(){
     </div>`).join('');
 }
 function saveFUConfig(){
-  CFG.fuLabels=Array.from({length:4},(_,i)=>{const el=document.getElementById(`fuLabelInp${i}`);return(el?el.value.trim():'')||['Initial Contact','Callback','Warm Follow-up','Final Follow-up'][i];});
-  CFG.fuOutcomes=Array.from({length:4},(_,i)=>{const el=document.getElementById(`fuOutInp${i}`);if(!el)return[];return el.value.split(',').map(s=>s.trim()).filter(Boolean);});
+  CFG.fuLabels=Array.from({length:3},(_,i)=>{const el=document.getElementById(`fuLabelInp${i}`);return(el?el.value.trim():'')||['Initial Contact','Callback','Final Follow-up'][i];});
+  CFG.fuOutcomes=Array.from({length:3},(_,i)=>{const el=document.getElementById(`fuOutInp${i}`);if(!el)return[];return el.value.split(',').map(s=>s.trim()).filter(Boolean);});
   updateFUHeaders();renderFUOpts();saveConfig();toast('FU config saved ✓','ok');
 }
 function saveFULabels(){saveFUConfig();} // alias for compatibility
@@ -2756,7 +2867,7 @@ async function runArchive(){
   if(!demoMode){
     sync(true);
     // Write 'Archive' tag to sheet so they're flagged
-    await Promise.all(candidates.map(l=>{l['Stage']='Archived';return writeRow(l,l._ri);}));
+    await Promise.all(candidates.map(l=>{l._archived=true;return writeRow(l,l._ri);}));
     sync(false);
   }
   toast(`${candidates.length} leads archived ✓`,'ok');
@@ -2787,14 +2898,18 @@ function renderArchive(){
 // UI INIT
 // ═══════════════════════════════════════════════════════════════════
 function initUI(){rebuildShootFilter();renderShootOpts();renderFUOpts();popAgents();initColToggles();updateFUHeaders();populateBulkAgents();rebuildSourceFilter();populatePanelSource();rebuildTagFilter();populateYaBar();}
-function rebuildShootFilter(){const sel=document.getElementById('fShoot');const cur=sel.value;sel.innerHTML='<option value="">All Shoots</option>'+CFG.shootTypes.map(t=>`<option${cur===t?' selected':''}>${esc(t)}</option>`).join('');}
+function rebuildShootFilter(){const sel=document.getElementById('fShoot');const cur=sel.value;
+  const inLeads=[...new Set(leads.map(l=>(l['Shoot Type']||'').trim()).filter(Boolean))];
+  const allShoots=[...new Set([...CFG.shootTypes,...inLeads])].sort();
+  sel.innerHTML='<option value="">All Shoots</option>'+allShoots.map(t=>`<option${cur===t?' selected':''}>${esc(t)}</option>`).join('');
+}
 function renderShootOpts(){document.getElementById('shootOpts').innerHTML=CFG.shootTypes.map(t=>`<button class="ob" data-val="${esc(t)}" onclick="selectOB('shootOpts','${esc(t)}','sb','pShoot')">${esc(t)}</button>`).join('');}
 function updateFUHeaders(){
-  const icons=['📞','🔁','🌡️','🏁'];
-  ['fu1label','fu2label','fu3label','fu4label'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=icons[i]+' '+CFG.fuLabels[i];});
+  const icons=['📞','🔁','🏁'];
+  ['fu1label','fu2label','fu3label'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=icons[i]+' '+CFG.fuLabels[i];});
 }
 function renderFUOpts(){
-  // Outcome buttons now set the TAG field (not fill notes) — notes are for free-text comments
+  // Outcome buttons set the Outcome column; notes textarea is for free text
   CFG.fuOutcomes.forEach((opts,i)=>{
     const stageEl=document.getElementById(`fu${i+1}Opts`);
     if(!stageEl)return;
@@ -2805,16 +2920,22 @@ function renderFUOpts(){
     }).join('');
   });
 }
-function updateFUHeaders(){
-  const icons=['📞','🔁','🌡️','🏁'];
-  ['fu1label','fu2label','fu3label','fu4label'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=icons[i]+' '+CFG.fuLabels[i];});
-}
+function updateFUHeaders_dup_removed(){}
 function popAgents(){
-  ['fAgent','pAgent'].forEach(id=>{
-    const el=document.getElementById(id);if(!el)return;
-    const blank=id==='fAgent'?'<option value="">All Agents</option>':'<option value="">Select agent</option>';
-    el.innerHTML=blank+CFG.agents.map(a=>`<option>${esc(a)}</option>`).join('');
-  });
+  // fAgent filter: merge CFG agents with any agents actually in loaded leads
+  const fAgentEl=document.getElementById('fAgent');
+  if(fAgentEl){
+    const cur=fAgentEl.value;
+    const inLeads=[...new Set(leads.map(l=>(l['Agent']||'').trim()).filter(Boolean))];
+    const allAgents=[...new Set([...CFG.agents,...inLeads])].sort();
+    fAgentEl.innerHTML='<option value="">All Agents</option>'+allAgents.map(a=>`<option${cur===a?' selected':''}>${esc(a)}</option>`).join('');
+  }
+  // pAgent panel: just CFG agents
+  const pAgentEl=document.getElementById('pAgent');
+  if(pAgentEl){
+    const blank='<option value="">Select agent</option>';
+    pAgentEl.innerHTML=blank+CFG.agents.map(a=>`<option>${esc(a)}</option>`).join('');
+  }
   populateYaBar();
 }
 function populateBulkAgents(){
@@ -2841,26 +2962,33 @@ function sync(v){document.getElementById('syncStatus').innerHTML=v?'<span class=
 // ═══════════════════════════════════════════════════════════════════
 function generateDemoLeads(){
   const t=todayISO(),yd=daysAgoISO(1),w=daysAgoISO(6),jan15='15/01/2026';
-  const mk=(ri,da,nm,ph,ag,src,loc,ba,sh,f1d,f1n,f2d,f2n,f3d,f3n,f4d,f4n,gn)=>{
-    const l={_ri:ri,'Date Added':da,'Name':nm,'Phone':ph,'Agent':ag,'Source':src,'Location':loc,'Baby Age':ba,'Shoot Type':sh,'FU1 Date':f1d,'FU1 Notes':f1n,'FU2 Date':f2d,'FU2 Notes':f2n,'FU3 Date':f3d,'FU3 Notes':f3n,'FU4 Date':f4d,'FU4 Notes':f4n,'General Notes':gn,'Tag':'','Stage':'Active'};
+  // mk: ri, dateAdded, name, phone, agent, source, loc, babyAge, shootType,
+  //     fu1d, fu1outcome, fu1notes, fu2d, fu2outcome, fu2notes, fu3d, fu3outcome, fu3notes, generalNotes
+  const mk=(ri,da,nm,ph,ag,src,loc,ba,sh,f1d,f1o,f1n,f2d,f2o,f2n,f3d,f3o,f3n,gn)=>{
+    const l={_ri:ri,'Date Added':da,'Name':nm,'Phone':ph,'Agent':ag,'Source':src,'Location':loc,'Baby Age':ba,'Shoot Type':sh,
+      'FU1 Date':f1d,'FU1 Outcome':f1o,'FU1 Notes':f1n,
+      'FU2 Date':f2d,'FU2 Outcome':f2o,'FU2 Notes':f2n,
+      'FU3 Date':f3d,'FU3 Outcome':f3o,'FU3 Notes':f3n,
+      'General Notes':gn,'Tag':''};
     l['Tag']=deriveTag(l);l._wm=wmCheck(l);return l;
   };
   return[
-    mk(2,jan15,'Priya Sharma','9876543210','Rajshree','Whatsapp','Pimpri','3 months','Baby Milestone','16/01/2026','Interested','22/01/2026','Still Interested','','','','','Hot lead'),
-    mk(3,jan15,'','9123456780','Rashmi','Instagram','','Newborn','Newborn','16/01/2026','No Response','','','','','','',''),
-    mk(4,w,'Anita Joshi','9871234560','Rajshree','Whatsapp','Pune','8 months','Baby Milestone',w,'Interested',yd,'Still Interested',t,'','','',''),
-    mk(5,jan15,'Rahul Patil','8899001122','Rajshree','Facebook','Nagpur','','Family','16/01/2026','Not Interested','','','','','','',''),
-    mk(6,t,'Kavya Singh','9900112233','Rashmi','Google','Pune','5 months','Baby Milestone',t,'Sent Package Details','','','','','','',''),
-    mk(7,yd,'','7766554433','Rajshree','Whatsapp','Pimpri','','Maternity',yd,'Call Later',t,'','','','','',''),
-    mk(8,'10/01/2026','Suresh More','9988776655','Ravi','Referral','Hadapsar','Newborn','Newborn','11/01/2026','Booked','','','','','','','Confirmed session'),
-    mk(9,'12/01/2026','Deepika Roy','8877665544','Rashmi','Instagram','Aundh','2 months','Newborn','13/01/2026','Budget Issue','14/01/2026','Lost Lead','','','','',''),
-    mk(10,t,'','6655443322','','Whatsapp','','','','','','','','','','','',''),
-    mk(11,w,'Meena Das','9911223344','Ravi','Whatsapp','Pune','6 months','Baby Milestone',w,'Interested',t,'','','','','',''),
-    mk(12,jan15,'Gurukrupa Naik','9158243139','Rajshree','Whatsapp','Swargate','1 year','Baby Milestone','17/01/2026','Interested','18/01/2026','voice mail','','','','',''),
-    mk(13,jan15,'Neha Kulkarni','9960015204','Rashmi','Whatsapp','Chakan','6 months','Baby Milestone','17/01/2026','Interested','18/01/2026','cancel shoot','','','','',''),
-    mk(14,daysAgoISO(20),'Sonal Mehta','9812345670','Rajshree','Instagram','Pune','3 months','Newborn',daysAgoISO(19),'Interested',daysAgoISO(16),'Still Interested',daysAgoISO(13),'No Response','','',''),
+    mk(2,jan15,'Priya Sharma','9876543210','Shital','WhatsApp','Pimpri','3 months','Milestone','16/01/2026','Interested','Client asked about packages','22/01/2026','Details Shared','Sent brochure on WA','','','',''),
+    mk(3,jan15,'','9123456780','Sapna','Incoming Call','','NB','Newborn','16/01/2026','CNR / No Response','','','','','','','',''),
+    mk(4,w,'Anita Joshi','9871234560','Shital','WhatsApp','Pune','8 months','Pre-Birthday',w,'Interested','Very keen, wants Oct slot',yd,'Details Shared','Shared packages',t,'','',''),
+    mk(5,jan15,'Rahul Patil','8899001122','Rashmi','Incoming Call','Nagpur','','Other','16/01/2026','Out of Pune / Area','Client is from Nagpur','','','','','','',''),
+    mk(6,t,'Kavya Singh','9900112233','Dhaneshri','WhatsApp','Pune','5 months','Milestone',t,'Details Shared','Sent package PDF','','','','','','',''),
+    mk(7,yd,'','7766554433','Shital','WhatsApp','Pimpri','','Maternity',yd,'Call Back Later','Asked to call after 5pm',t,'','','','','',''),
+    mk(8,'10/01/2026','Suresh More','9988776655','Sapna','Incoming Call','Hadapsar','NB','Newborn','11/01/2026','Booked','Confirmed, paid advance','','','','','','','Session 18 Jan'),
+    mk(9,'12/01/2026','Deepika Roy','8877665544','Rashmi','WhatsApp','Aundh','2 months','Milestone','13/01/2026','Budget Issue','Budget constraints mentioned','14/01/2026','Not Interested','Confirmed not proceeding','','','',''),
+    mk(10,t,'','6655443322','','WhatsApp','','','','','','','','','','','','',''),
+    mk(11,w,'Meena Das','9911223344','Dhaneshri','WhatsApp','Pune','6 months','Milestone',w,'Interested','',t,'','','','','',''),
+    mk(12,jan15,'Gurukrupa Naik','9158243139','Shital','WhatsApp','Swargate','1 year','Pre-Birthday','17/01/2026','Interested','','18/01/2026','CNR / No Response','Voicemail left','','','',''),
+    mk(13,jan15,'Neha Kulkarni','9960015204','Rashmi','WhatsApp','Chakan','6 months','Milestone','17/01/2026','Interested','','18/01/2026','Future Shoot (Planned)','Planning for March','','','',''),
+    mk(14,daysAgoISO(20),'Sonal Mehta','9812345670','Shital','Instagram','Pune','3 months','Milestone',daysAgoISO(19),'Interested','',daysAgoISO(16),'Details Shared','Sent all packages',daysAgoISO(13),'CNR / No Response','No reply after follow up',''),
   ];
 }
+
 
 // ═══════════════════════════════════════════════════════════════════
 // UNIT TESTS
@@ -2897,58 +3025,64 @@ function runTests(){
   assert('rowToLead correct',(()=>{const r=['15/01/2026','Whatsapp','Priya','9876543210','Newborn','Pimpri','3m','Rajshree'];const l=rowToLead(r);return l['Name']==='Priya'&&l['Phone']==='9876543210';})());
   assert('leadToRow roundtrip',(()=>{const lead={};FIELDS.forEach(f=>lead[f]='');lead['Name']='Test';lead['Phone']='9999';const back=rowToLead(leadToRow(lead));return back['Name']==='Test';})());
 
-  // ── TAG SYSTEM (new v5) ────────────────────────────────────────
+  // ── TAG SYSTEM ────────────────────────────────────────
   group('Auto-tag: deriveTag');
-  assert('Booked = booked',deriveTag({'FU1 Notes':'Booked','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='booked');
-  assert('Lost Lead = cold',deriveTag({'FU1 Notes':'Lost Lead','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='cold');
-  assert('Not Interested = cold',deriveTag({'FU1 Notes':'Not Interested','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='cold');
-  assert('Cancelled = cold',deriveTag({'FU1 Notes':'Cancelled','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='cold');
-  assert('No Response = nore',deriveTag({'FU1 Notes':'No Response','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='nore');
-  assert('CNR = nore',deriveTag({'FU1 Notes':'CNR msg sent','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='nore');
-  assert('Call Busy = nore',deriveTag({'FU1 Notes':'Call Busy','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='nore');
-  assert('Voice Mail = nore',deriveTag({'FU1 Notes':'Voice Mail','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='nore');
-  assert('Budget Issue = nore',deriveTag({'FU1 Notes':'Budget Issue','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='nore');
-  assert('Interested = int',deriveTag({'FU1 Notes':'Interested','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='int');
-  assert('Still Interested = int',deriveTag({'FU2 Notes':'Still Interested','FU1 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='int');
-  assert('Not Interested NOT int',deriveTag({'FU1 Notes':'Not Interested','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})!=='int');
-  assert('Sent Package = warm',deriveTag({'FU1 Notes':'Sent Package Details','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='warm');
-  assert('Call Later = warm',deriveTag({'FU1 Notes':'Call Later','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='warm');
-  assert('Future Plan = warm',deriveTag({'FU1 Notes':'Future Plan','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='warm');
-  assert('Out of Pune = oop',deriveTag({'FU1 Notes':'Out of Pune','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='oop');
-  assert('Outsider = oop',deriveTag({'FU1 Notes':'Not from Pune','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='oop');
-  assert('Invalid = inv',deriveTag({'FU1 Notes':'Invalid Number','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='inv');
-  assert('Shoot Done = done',deriveTag({'FU4 Notes':'Shoot Done','FU1 Notes':'','FU2 Notes':'','FU3 Notes':'','General Notes':''})==='done');
-  assert('Empty = new',deriveTag({'FU1 Notes':'','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''})==='new');
-  assert('Last note wins: FU4 overrides FU1',deriveTag({'FU1 Notes':'Interested','FU2 Notes':'No Response','FU3 Notes':'','FU4 Notes':'Booked','General Notes':''})==='booked');
-  assert('FU4 cold overrides FU1 interest',deriveTag({'FU1 Notes':'Interested','FU4 Notes':'Lost Lead','FU2 Notes':'','FU3 Notes':'','General Notes':''})==='cold');
+  const dt=(obj)=>deriveTag(obj);
+  const fu=(f1o='',f1n='',f2o='',f2n='',f3o='',f3n='',gn='')=>({'FU1 Outcome':f1o,'FU1 Notes':f1n,'FU2 Outcome':f2o,'FU2 Notes':f2n,'FU3 Outcome':f3o,'FU3 Notes':f3n,'General Notes':gn,'Tag':''});
+  assert('Booked outcome = booked',dt(fu('Booked'))==='booked');
+  assert('Booked note = booked',dt(fu('','Booked'))==='booked');
+  assert('Lost Lead = cold',dt(fu('','Lost Lead'))==='cold');
+  assert('Not Interested outcome = cold',dt(fu('Not Interested'))==='cold');
+  assert('Not Interested note = cold',dt(fu('','Not Interested'))==='cold');
+  assert('Cancelled = cold',dt(fu('','Cancelled'))==='cold');
+  assert('CNR / No Response outcome = nore',dt(fu('CNR / No Response'))==='nore');
+  assert('No Response note = nore',dt(fu('','No Response'))==='nore');
+  assert('CNR msg sent = nore',dt(fu('','CNR msg sent'))==='nore');
+  assert('Call Busy = nore',dt(fu('','Call Busy'))==='nore');
+  assert('Voice Mail = nore',dt(fu('','Voice Mail'))==='nore');
+  assert('Budget Issue = cold',dt(fu('Budget Issue'))==='cold');
+  assert('Interested outcome = int',dt(fu('Interested'))==='int');
+  assert('Interested note = int',dt(fu('','Interested'))==='int');
+  assert('Still Interested = int',dt(fu('','','Still Interested'))==='int');
+  assert('Not Interested NOT int',dt(fu('Not Interested'))!=='int');
+  assert('Details Shared = int',dt(fu('Details Shared'))==='int');
+  assert('Call Back Later = warm',dt(fu('Call Back Later'))==='warm');
+  assert('Call Later = warm',dt(fu('','Call Later'))==='warm');
+  assert('Future Shoot (Planned) = warm',dt(fu('Future Shoot (Planned)'))==='warm');
+  assert('Studio Visit Planned = warm',dt(fu('Studio Visit Planned'))==='warm');
+  assert('Out of Pune/Area = oop',dt(fu('Out of Pune / Area'))==='oop');
+  assert('Out of Pune note = oop',dt(fu('','Out of Pune'))==='oop');
+  assert('Not from Pune = oop',dt(fu('','Not from Pune'))==='oop');
+  assert('Invalid Number = inv',dt(fu('','Invalid Number'))==='inv');
+  assert('Shoot Done = done',dt(fu('','','','','Shoot Done'))==='done');
+  assert('Empty = new',dt(fu())==='new');
+  assert('FU3 outcome overrides FU1',dt(fu('Interested','','','','Booked'))==='booked');
+  assert('FU3 cold overrides FU1 interest',dt(fu('Interested','','','','Lost Lead'))==='cold');
 
   group('Auto-tag: getTag + stored override');
-  assert('Stored tag used when valid',(()=>{const l={Tag:'int','FU1 Notes':'No Response','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''};return getTag(l)==='int';})());
-  assert('Invalid stored tag falls back to derived',(()=>{const l={Tag:'garbage','FU1 Notes':'Booked','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''};return getTag(l)==='booked';})());
-  assert('Empty tag falls back to derived',(()=>{const l={Tag:'','FU1 Notes':'Interested','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''};return getTag(l)==='int';})());
-  assert('tagInfo returns correct dot class',(()=>{const l={'FU1 Notes':'Booked','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','Tag':'','General Notes':''};return tagInfo(l).dot==='dg';})());
-  assert('tagInfo booked has correct badge',(()=>{const l={'FU1 Notes':'Booked','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','Tag':'','General Notes':''};return tagInfo(l).badge==='btag-booked';})());
-  assert('All TAG_DEFS have required fields (badge fix)',Object.values(TAG_DEFS).every(d=>d.label&&d.emoji&&d.dot&&d.badge&&d.bg&&d.color));
-  // ── REAL SHEET NOTE PATTERNS (v6.1 regression tests) ────────────
+  assert('Stored tag used when valid',(()=>{const l={Tag:'int','FU1 Notes':'No Response','FU2 Notes':'','FU3 Notes':'','General Notes':''};return getTag(l)==='int';})());
+  assert('Invalid stored tag falls back to derived',(()=>{const l={Tag:'garbage','FU1 Notes':'Booked','FU2 Notes':'','FU3 Notes':'','General Notes':''};return getTag(l)==='booked';})());
+  assert('Empty tag falls back to derived',(()=>{const l={Tag:'','FU1 Notes':'Interested','FU2 Notes':'','FU3 Notes':'','General Notes':''};return getTag(l)==='int';})());
+  assert('tagInfo returns correct dot class',(()=>{const l={'FU1 Notes':'Booked','FU2 Notes':'','FU3 Notes':'','Tag':'','General Notes':''};return tagInfo(l).dot==='dg';})());
+  assert('tagInfo booked has correct badge',(()=>{const l={'FU1 Notes':'Booked','FU2 Notes':'','FU3 Notes':'','Tag':'','General Notes':''};return tagInfo(l).badge==='btag-booked';})());
+  assert('All TAG_DEFS have required fields',Object.values(TAG_DEFS).every(d=>d.label&&d.emoji&&d.dot&&d.badge&&d.bg&&d.color));
+  // ── REAL SHEET NOTE PATTERNS ────────────
   group('Real Sheet Note Patterns — LilliputLand');
-  // These are the exact note strings from the actual sheet
-  function mk(fu1,notes='',fu2='',fu3=''){return{'FU1 Notes':fu1,'General Notes':notes,'FU2 Notes':fu2,'FU3 Notes':fu3,'FU4 Notes':'','Tag':''};}
-  assert('CNR/Voice Mail → noresponse',deriveTag(mk('No Response/CNR msg sent/Call Busy/Voice Mail'))==='noresponse');
-  assert('CNA → noresponse',deriveTag(mk('CNA'))==='noresponse');
-  assert('Not from Pune/Outsider → outofarea',deriveTag(mk('Not from Pune/Outsider'))==='outofarea');
-  assert('Not Interested/Call Disconnected → cold',deriveTag(mk('Not Interested/Call Disconnected'))==='cold');
-  assert('Invalid Number/Call on Whatsapp → invalid',deriveTag(mk('Invalid Number/Call on Whatsapp/No incoming calls'))==='invalid');
-  assert('Shoot done/No Requirement → done',deriveTag(mk('Shoot done/No Requirement'))==='done');
-  assert('Interested → interested',deriveTag(mk('Interested'))==='interested');
-  assert('Details Shared → interested',deriveTag(mk('Details Shared'))==='interested');
-  assert('Sent Package Details → interested',deriveTag(mk('Sent Package Details'))==='interested');
-  assert('Budget Issue → cold',deriveTag(mk('Budget Issue'))==='cold');
-  assert('Asked me to call later → warm',deriveTag(mk('Asked me to call later.'))==='warm');
-  assert('Plan for next Month → warm',deriveTag(mk('Plan for next Month'))==='warm');
-  assert('Out of Pune (FU2) → outofarea',(()=>{const l=mk('No Response/CNR','','out of pune msg send','');return deriveTag(l)==='outofarea';})());
-  assert('NoResponse/CNRmsgsent/VoiceMail → noresponse',deriveTag(mk('NoResponse/CNRmsgsent/VoiceMail'))==='noresponse');
-  assert('Out of service/network → invalid',deriveTag(mk('Out of service/network/not reachable'))==='invalid');
-  assert('Call Disconnected alone → cold',deriveTag(mk('Call Disconnected'))==='cold');
+  function mk(fu1o='',fu1n='',fu2o='',fu2n=''){return{'FU1 Outcome':fu1o,'FU1 Notes':fu1n,'FU2 Outcome':fu2o,'FU2 Notes':fu2n,'FU3 Outcome':'','FU3 Notes':'','General Notes':'','Tag':''};}
+  assert('CNR/Voice Mail → noresponse',deriveTag(mk('CNR / No Response'))==='noresponse');
+  assert('CNA note → noresponse',deriveTag(mk('','CNA'))==='noresponse');
+  assert('Not from Pune → outofarea',deriveTag(mk('','Not from Pune'))==='outofarea');
+  assert('Not Interested note → cold',deriveTag(mk('','Not Interested'))==='cold');
+  assert('Invalid Number note → invalid',deriveTag(mk('','Invalid Number'))==='invalid');
+  assert('Shoot done note → done',deriveTag(mk('','Shoot done'))==='done');
+  assert('Interested outcome → interested',deriveTag(mk('Interested'))==='interested');
+  assert('Details Shared outcome → interested',deriveTag(mk('Details Shared'))==='interested');
+  assert('Details Shared note → interested',deriveTag(mk('','Details Shared'))==='interested');
+  assert('Budget Issue outcome → cold',deriveTag(mk('Budget Issue'))==='cold');
+  assert('Call Later note → warm',deriveTag(mk('','Asked me to call later.'))==='warm');
+  assert('Plan for next month → warm',deriveTag(mk('','Plan for next Month'))==='warm');
+  assert('Out of pune in FU2 note → outofarea',deriveTag(mk('','No Response','','Out of pune'))==='outofarea');
+  assert('Out of service note → invalid',deriveTag(mk('','Out of service'))==='invalid');
   assert('Not Intrested (typo) → cold',deriveTag(mk('Not Intrested'))==='cold');
   assert('Booking confirmed → booked',deriveTag(mk('Booking confirmed'))==='booked');
   assert('Call busy → noresponse',deriveTag(mk('Call busy'))==='noresponse');
@@ -3014,9 +3148,9 @@ function runTests(){
   assert('maternity → Maternity',classifyShootType('maternity')==='Maternity');
   assert('MATERNITY → Maternity',classifyShootType('MATERNITY')==='Maternity');
   assert('maternaty (typo) → Maternity',classifyShootType('maternaty')==='Maternity');
-  assert('2y → Kids (14m+ default)',classifyShootType('2y')==='Kids');
-  assert('5y → Kids',classifyShootType('5y')==='Kids');
-  assert('3y family notes → Family',classifyShootType('3y','family shoot')==='Family');
+  assert('2y → Other (14m+ default)',classifyShootType('2y')==='Other');
+  assert('5y → Other',classifyShootType('5y')==='Other');
+  assert('3y → Other (no Family type)',classifyShootType('3y','family shoot')==='Other');
   assert('empty → empty string',classifyShootType('')==='');
   assert('Demo leads all have Tag set',leads.every(l=>!!(l['Tag'])));
   assert('Auto-tagged demo booked lead',leads.some(l=>l['Tag']==='booked'));
@@ -3027,15 +3161,15 @@ function runTests(){
 
   group('Auto-tag: backfill (only blank tags)');
   assert('deriveTag fills blank tags',(()=>{
-    const l={'FU1 Notes':'Interested','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','Tag':'','General Notes':''};
+    const l={'FU1 Outcome':'Interested','FU1 Notes':'','FU2 Outcome':'','FU2 Notes':'','FU3 Outcome':'','FU3 Notes':'','Tag':'','General Notes':''};
     const tag=deriveTag(l);return tag==='int';
   })());
   assert('Backfill skips leads with existing tag',(()=>{
-    const l={'FU1 Notes':'No Response','Tag':'int','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''};
+    const l={'FU1 Outcome':'CNR / No Response','Tag':'int','FU2 Outcome':'','FU3 Outcome':'','General Notes':''};
     return getTag(l)==='int'; // stored tag preserved
   })());
   assert('save applies tag on new leads',(()=>{
-    const l={'FU1 Notes':'Booked','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':'','Tag':''};
+    const l={'FU1 Outcome':'Booked','FU1 Notes':'','FU2 Outcome':'','FU2 Notes':'','FU3 Outcome':'','FU3 Notes':'','General Notes':'','Tag':''};
     l['Tag']=deriveTag(l);return l['Tag']==='booked';
   })());
 
@@ -3123,48 +3257,49 @@ function runTests(){
   assert('Leads with existing phones excluded from import',(()=>{const existingPhones=new Set(leads.map(l=>(l['Phone']||'').replace(/\D/g,'')).filter(Boolean));const newPh='1111111111';return!existingPhones.has(newPh);})());
   assert('All demo phones are unique',(()=>{const phones=leads.map(l=>(l['Phone']||'').replace(/\D/g,'')).filter(Boolean);return phones.length===new Set(phones).size;})());
 
-  // ── CLOSED / ACTIVE (legacy) ───────────────────────────────────
+  // ── CLOSED / ACTIVE ───────────────────────────────────────────
   group('Closed / Active Detection');
-  assert('Booked = closed',isClosed({'FU1 Notes':'Booked','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','Tag':''}));
-  assert('Lost Lead = closed',isClosed({'FU2 Notes':'Lost Lead','FU1 Notes':'','FU3 Notes':'','FU4 Notes':'','Tag':''}));
-  assert('Not Interested = closed',isClosed({'FU1 Notes':'Not Interested','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','Tag':''}));
-  assert('Shoot Done = closed',isClosed({'FU4 Notes':'Shoot Done','FU1 Notes':'','FU2 Notes':'','FU3 Notes':'','Tag':''}));
-  assert('Interested = active',!isClosed({'FU1 Notes':'Interested','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','Tag':''}));
-  assert('Empty = active',!isClosed({'FU1 Notes':'','FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','Tag':''}));
+  assert('Booked outcome = closed',isClosed({'FU1 Outcome':'Booked','FU1 Notes':'','FU2 Outcome':'','FU3 Outcome':'','Tag':''}));
+  assert('Booked note = closed',isClosed({'FU1 Notes':'Booked','FU1 Outcome':'','FU2 Notes':'','FU3 Notes':'','Tag':''}));
+  assert('Lost Lead = closed',isClosed({'FU2 Notes':'Lost Lead','FU1 Notes':'','FU3 Notes':'','Tag':''}));
+  assert('Not Interested outcome = closed',isClosed({'FU1 Outcome':'Not Interested','FU2 Outcome':'','FU3 Outcome':'','Tag':''}));
+  assert('Shoot Done FU3 = closed',isClosed({'FU3 Notes':'Shoot Done','FU1 Notes':'','FU2 Notes':'','Tag':''}));
+  assert('Interested = active',!isClosed({'FU1 Outcome':'Interested','FU2 Outcome':'','FU3 Outcome':'','Tag':''}));
+  assert('Empty = active',!isClosed({'FU1 Outcome':'','FU1 Notes':'','FU2 Outcome':'','FU3 Outcome':'','Tag':''}));
 
-  // ── FU STAGE FILTER (legacy) ───────────────────────────────────
+  // ── FU STAGE FILTER ───────────────────────────────────────────
   group('FU Stage Filter');
-  const newL=leads.filter(l=>!isClosed(l)&&!(l['FU1 Notes']||l['FU1 Date']));
-  assert('New filter: none have FU1',newL.every(l=>!(l['FU1 Notes']||l['FU1 Date'])));
+  const newL=leads.filter(l=>!isClosed(l)&&!(l['FU1 Notes']||l['FU1 Outcome']||l['FU1 Date']));
+  assert('New filter: none have FU1',newL.every(l=>!(l['FU1 Notes']||l['FU1 Outcome']||l['FU1 Date'])));
   assert('New filter: none are closed',newL.every(l=>!isClosed(l)));
 
-  // ── WINDOW MISSED (legacy) ─────────────────────────────────────
+  // ── WINDOW MISSED ─────────────────────────────────────────────
   group('Window Missed Detection');
   assert('Newborn 30d old = missed',wmCheck({'Shoot Type':'Newborn','Baby Age':'Newborn','Date Added':'01/01/2026'}));
   assert('Newborn today = not missed',!wmCheck({'Shoot Type':'Newborn','Baby Age':'Newborn','Date Added':todayISO()}));
   assert('Missing fields = not missed',!wmCheck({'Shoot Type':'','Baby Age':'','Date Added':''}));
 
-  // ── COLUMN VISIBILITY (legacy) ─────────────────────────────────
+  // ── COLUMN VISIBILITY ─────────────────────────────────────────
   group('Column Visibility');
   assert('col-tag is hideable',HIDEABLE_COLS.some(c=>c.key==='col-tag'));
   assert('col-source is hideable',HIDEABLE_COLS.some(c=>c.key==='col-source'));
   assert('All 6 cols hideable',HIDEABLE_COLS.length===6);
   assert('colClass visible=empty string',colClass('col-tag')===(colVisibility['col-tag']?'':'col-hide'));
 
-  // ── CSV IMPORT PARSING (legacy) ────────────────────────────────
+  // ── CSV IMPORT PARSING ────────────────────────────────────────
   group('CSV Import Parsing');
   assert('Detects headers',(()=>{const r=parseCSV('Phone,Name\n9876543210,Priya');return r.headers[0]==='Phone'&&r.rows[0][0]==='9876543210';})());
   assert('Numbers-only = Column labels',(()=>{const r=parseCSV('9876543210\n9123456789');return r.headers[0]==='Column 1'&&r.rows.length===2;})());
   assert('Quoted values parsed',(()=>{const r=parseCSV('"Phone","Name"\n"9876543210","Priya Sharma"');return r.rows[0][1]==='Priya Sharma';})());
   assert('Comma in quotes handled',(()=>{const r=parseCSV('Name,Note\n"Smith, John","Test"');return r.rows[0][0]==='Smith, John';})());
 
-  // ── CONFIG SYNC (legacy) ───────────────────────────────────────
+  // ── CONFIG SYNC ───────────────────────────────────────────────
   group('Config Sync');
   assert('shootTypes join/split roundtrip',(()=>{const a=CFG.shootTypes;return a.join('|').split('|').filter(Boolean).join('|')===a.join('|');})());
-  assert('fuLabels have 4 entries',CFG.fuLabels.length===4);
-  assert('getStage uses fuLabels',getStage({'FU1 Notes':'x','FU1 Date':'x','FU2 Notes':'','FU2 Date':'','FU3 Notes':'','FU3 Date':'','FU4 Notes':'','FU4 Date':''}).includes(CFG.fuLabels[0]));
+  assert('fuLabels have 3 entries',CFG.fuLabels.length===3);
+  assert('getStage uses fuLabels',getStage({'FU1 Outcome':'x','FU1 Date':'x','FU2 Outcome':'','FU2 Date':'','FU3 Outcome':'','FU3 Date':''}).includes(CFG.fuLabels[0]));
 
-  // ── CSV RFC 4180 PARSER (v6 fix) ─────────────────────────────
+  // ── CSV RFC 4180 PARSER ───────────────────────────────────────
   group('CSV Parser — RFC 4180');
   assert('Simple CSV parses correctly',(()=>{const r=parseCSV('Name,Phone\nPriya,9876543210');return r.rows[0][0]==='Priya'&&r.rows[0][1]==='9876543210';})());
   assert('Comma inside quoted field',(()=>{const r=parseCSV('Name,Note\n"Smith, John","Good client"');return r.rows[0][0]==='Smith, John';})());
@@ -3177,25 +3312,25 @@ function runTests(){
   assert('CRLF line endings handled',(()=>{const r=parseCSV('Name,Phone\r\nPriya,9876');return r.rows[0][0]==='Priya';})());
   assert('Three columns with quoted comma',(()=>{const r=parseCSV('A,B,C\n"a,1",b,c');return r.rows[0][0]==='a,1'&&r.rows[0][1]==='b'&&r.rows[0][2]==='c';})());
 
-  // ── SCHEDULED REMINDER LOGIC (v6) ────────────────────────────
+  // ── SCHEDULED REMINDER LOGIC ──────────────────────────────────
   group('Scheduled Reminder Logic');
   const futureDate=(n=1)=>{const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];};
   const pastDate=(n=5)=>{const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];};
-  const schLead={'FU1 Date':futureDate(3),'FU1 Notes':'','FU2 Date':'','FU2 Notes':'','FU3 Date':'','FU3 Notes':'','FU4 Date':'','FU4 Notes':''};
-  const notSchLead={'FU1 Date':futureDate(3),'FU1 Notes':'Interested','FU2 Date':'','FU2 Notes':'','FU3 Date':'','FU3 Notes':'','FU4 Date':'','FU4 Notes':''};
-  const todaySchLead={'FU1 Date':todayISO(),'FU1 Notes':'','FU2 Date':'','FU2 Notes':'','FU3 Date':'','FU3 Notes':'','FU4 Date':'','FU4 Notes':''};
+  const schLead={'FU1 Date':futureDate(3),'FU1 Notes':'','FU2 Date':'','FU2 Notes':'','FU3 Date':'','FU3 Notes':''};
+  const notSchLead={'FU1 Date':futureDate(3),'FU1 Notes':'Interested','FU2 Date':'','FU2 Notes':'','FU3 Date':'','FU3 Notes':''};
+  const todaySchLead={'FU1 Date':todayISO(),'FU1 Notes':'','FU2 Date':'','FU2 Notes':'','FU3 Date':'','FU3 Notes':''};
   assert('Date set no notes → isScheduledReminder',isScheduledReminder(schLead));
   assert('Date set with notes → NOT scheduled',!isScheduledReminder(notSchLead));
-  assert('Past date no notes → NOT scheduled',!isScheduledReminder({'FU1 Date':pastDate(3),'FU1 Notes':'','FU2 Date':'','FU2 Notes':'','FU3 Date':'','FU3 Notes':'','FU4 Date':'','FU4 Notes':''}));
+  assert('Past date no notes → NOT scheduled',!isScheduledReminder({'FU1 Date':pastDate(3),'FU1 Notes':'','FU2 Date':'','FU2 Notes':'','FU3 Date':'','FU3 Notes':''}));
   assert('Today date no notes → IS scheduled',isScheduledReminder(todaySchLead));
   assert('Scheduled lead → tag=scheduled',getTag(schLead)==='scheduled');
   assert('Non-scheduled lead → not scheduled tag',getTag(notSchLead)!=='scheduled');
   assert('reminderDate returns future date',reminderDate(schLead)===schLead['FU1 Date']);
   assert('reminderDate empty for non-scheduled',reminderDate(notSchLead)==='');
 
-  // ── OVERDUE VS DUE TODAY SPLIT (v6) ──────────────────────────
+  // ── OVERDUE VS DUE TODAY SPLIT ────────────────────────────────
   group('Overdue vs Due Today Split');
-  const baseActive={'Tag':'','Stage':'Active','FU3 Date':'','FU3 Notes':'','FU4 Date':'','FU4 Notes':''};
+  const baseActive={'Tag':'','FU3 Date':'','FU3 Notes':'','FU3 Outcome':''};
   const overdueL={...baseActive,'FU1 Notes':'Interested','FU1 Date':pastDate(5),'FU2 Date':pastDate(2),'FU2 Notes':''};
   const dueTodayL={...baseActive,'FU1 Notes':'Interested','FU1 Date':pastDate(5),'FU2 Date':todayISO(),'FU2 Notes':''};
   const futureL={...baseActive,'FU1 Notes':'Interested','FU1 Date':pastDate(5),'FU2 Date':futureDate(3),'FU2 Notes':''};
@@ -3209,7 +3344,7 @@ function runTests(){
   assert('Scheduled today → isDueToday',isDueToday(todaySchLead));
   assert('Scheduled future → NOT isDueToday',!isDueToday(schLead));
 
-  // ── ARCHIVE LOGIC (v6) ────────────────────────────────────────
+  // ── ARCHIVE LOGIC ─────────────────────────────────────────────
   group('Archive Logic');
   const old62=(()=>{const d=new Date();d.setDate(d.getDate()-62);return d.toISOString().split('T')[0];})();
   const stale={...baseActive,'Date Added':old62,'FU1 Notes':'No Response','FU1 Date':old62,'FU2 Date':'','FU2 Notes':''};
@@ -3218,26 +3353,26 @@ function runTests(){
   assert('62d old WITH future FU → NOT archiveable',!isArchiveable(staleWithFuture));
   assert('Fresh lead → NOT archiveable',!isArchiveable({...baseActive,'Date Added':todayISO(),'FU1 Date':'','FU1 Notes':'','FU2 Date':'','FU2 Notes':''}));
 
-  // ── SOURCES CONFIG (v6) ───────────────────────────────────────
+  // ── SOURCES CONFIG ────────────────────────────────────────────
   group('Sources Config');
-  assert('Default sources has Whatsapp',CFG.sources.includes('Whatsapp'));
+  assert('Default sources has WhatsApp',CFG.sources.includes('WhatsApp'));
   assert('Default sources has Incoming Call',CFG.sources.includes('Incoming Call'));
   assert('Sources are unique strings',CFG.sources.every(s=>typeof s==='string'&&s.length>0));
   assert('Sources roundtrip through pipe',CFG.sources.join('|').split('|').filter(Boolean).every((s,i)=>s===CFG.sources[i]));
 
-  // ── PER-FU OUTCOMES (v6) ─────────────────────────────────────
+  // ── PER-FU OUTCOMES ───────────────────────────────────────────
   group('Per-FU Stage Outcomes');
-  assert('fuOutcomes has 4 stages',CFG.fuOutcomes.length===4);
+  assert('fuOutcomes has 3 stages',CFG.fuOutcomes.length===3);
   assert('FU1 outcomes non-empty',CFG.fuOutcomes[0].length>0);
   assert('FU2 differs from FU1',JSON.stringify(CFG.fuOutcomes[0])!==JSON.stringify(CFG.fuOutcomes[1]));
-  assert('FU4 has Booked option',CFG.fuOutcomes[3].some(o=>o.toLowerCase().includes('booked')));
+  assert('FU3 has Booked option',CFG.fuOutcomes[2].some(o=>o.toLowerCase().includes('booked')));
   assert('outcomeColor Booked=sg',outcomeColor('Booked')==='sg');
   assert('outcomeColor Not Interested=sr',outcomeColor('Not Interested')==='sr');
   assert('outcomeColor No Response=so',outcomeColor('No Response')==='so');
   assert('outcomeColor Interested=sb',outcomeColor('Interested')==='sb');
   assert('fuOutcomes JSON roundtrip',(()=>{const s=JSON.stringify(CFG.fuOutcomes);return JSON.stringify(JSON.parse(s))===s;})());
 
-  // ── CUSTOM TAGS (v6) ─────────────────────────────────────────
+  // ── CUSTOM TAGS & resolveTagKey ───────────────────────────────
   group('Custom Tags & resolveTagKey');
   assert('booked resolves',resolveTagKey('booked')==='booked');
   assert('Booked (caps) resolves',resolveTagKey('Booked')==='booked');
@@ -3251,25 +3386,24 @@ function runTests(){
   assert('All TAG_DEFS have required fields',Object.values(TAG_DEFS).every(d=>d.bg&&d.color&&d.border&&d.dot&&d.emoji));
   assert('customTags default non-empty',CFG.customTags.length>0);
 
-  // ── TAG PRIORITY (v7) ─────────────────────────────────────────
+  // ── TAG PRIORITY ──────────────────────────────────────────────
   group('Tag Priority — Manual Override vs Auto-Derive');
-  // Simulate what saveLead does: manualTag wins over deriveTag
-  function resolveLeadTag(manualTag, notes){
-    const l={'FU1 Notes':notes,'FU2 Notes':'','FU3 Notes':'','FU4 Notes':'','General Notes':''};
+  function resolveLeadTag(manualTag, outcomeVal){
+    const l={'FU1 Outcome':outcomeVal,'FU1 Notes':'','FU2 Outcome':'','FU3 Outcome':'','General Notes':''};
     return manualTag||deriveTag(l)||'';
   }
   assert('Manual Cold beats auto-derive',resolveLeadTag('cold','Details Shared')==='cold');
-  assert('Manual Booked beats CNR notes',resolveLeadTag('booked','CNR CNR CNR')==='booked');
-  assert('Manual Interested beats cold notes',resolveLeadTag('interested','Not Interested')==='interested');
-  assert('No manual → auto-derive CNR',resolveLeadTag('','CNR')==='noresponse');
+  assert('Manual Booked beats CNR',resolveLeadTag('booked','CNR / No Response')==='booked');
+  assert('Manual Interested beats cold',resolveLeadTag('interested','Not Interested')==='interested');
+  assert('No manual → auto-derive CNR',resolveLeadTag('','CNR / No Response')==='noresponse');
   assert('No manual → auto-derive interested',resolveLeadTag('','Details Shared')==='interested');
-  assert('No manual + empty notes → new',resolveLeadTag('','')==='new'||resolveLeadTag('','')==='');
+  assert('No manual + empty → new',resolveLeadTag('','')==='new'||resolveLeadTag('','')==='');
   assert('Manual warm + auto-cold → warm',resolveLeadTag('warm','Not Interested')==='warm');
   assert('Manual outofarea stays',resolveLeadTag('outofarea','Details Shared')==='outofarea');
 
-  // ── IS CLOSED (v7) ────────────────────────────────────────────
+  // ── IS CLOSED ─────────────────────────────────────────────────
   group('isClosed — Close Logic');
-  const mkL=(tag,notes='')=>({'Tag':tag,'Stage':'','FU1 Notes':notes,'FU2 Notes':'','FU3 Notes':'','FU4 Notes':''});
+  const mkL=(tag,notes='')=>({'Tag':tag,'FU1 Notes':notes,'FU1 Outcome':'','FU2 Notes':'','FU2 Outcome':'','FU3 Notes':'','FU3 Outcome':''});
   assert('Tag=booked → closed',isClosed(mkL('booked')));
   assert('Tag=done → closed',isClosed(mkL('done')));
   assert('Tag=cold → closed',isClosed(mkL('cold')));
@@ -3287,7 +3421,6 @@ function runTests(){
   assert('Notes: CNR → NOT closed',!isClosed(mkL('','CNR')));
   assert('Notes: details shared → NOT closed',!isClosed(mkL('','details shared')));
   assert('Notes: not from pune → NOT closed',!isClosed(mkL('','not from pune')));
-  assert('Stage=Closed stored → closed',isClosed({...mkL(''),'Stage':'Closed'}));
 
   // ── DUPLICATE PHONE DETECTION (v7) ────────────────────────────
   group('Duplicate Phone Detection');
@@ -3345,7 +3478,23 @@ window.addEventListener('load',()=>{
   if(c)document.getElementById('cfgCid').value=c;
   if(s)document.getElementById('cfgSid').value=s;
   if(n)document.getElementById('cfgSname').value=n;
-  // v8: reportDate removed, now using reportFrom/reportTo
+  updateTabHint();
+  // Check for pipeline bookmark URL params
+  const params=new URLSearchParams(window.location.search);
+  const pipelineParam=params.get('pipeline');
+  if(pipelineParam){
+    try{
+      const p=JSON.parse(atob(pipelineParam));
+      if(p.sheetId&&p.tabName){
+        SHEET_ID=p.sheetId;SHEET_NAME=p.tabName;
+        if(p.clientId)CLIENT_ID=p.clientId;
+        if(document.getElementById('cfgSid'))document.getElementById('cfgSid').value=SHEET_ID;
+        if(document.getElementById('cfgSname'))document.getElementById('cfgSname').value=SHEET_NAME;
+        if(document.getElementById('cfgCid')&&CLIENT_ID)document.getElementById('cfgCid').value=CLIENT_ID;
+        updateTabHint();
+      }
+    }catch(e){}
+  }
 });
 </script>
 </body>
